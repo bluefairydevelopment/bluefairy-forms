@@ -14,8 +14,7 @@
   },
   "autoload": {
     "psr-4": {
-      "BlueFairy\\Forms\\": "includes/",
-      "BlueFairy\\Forms\\Cli\\": "cli/"
+      "BlueFairy\\Forms\\": "includes/"
     }
   },
   "config": {
