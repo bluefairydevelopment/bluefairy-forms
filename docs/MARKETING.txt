@@ -1,0 +1,88 @@
+BlueFairy Forms — Marketing Content
+=====================================
+
+
+3-SENTENCE SUMMARY
+------------------
+
+BlueFairy Forms is a zero-asset-bloat WordPress forms plugin that gives developers a Gutenberg block and shortcode for contact forms with no jQuery, no third-party scripts, and no bloat. Every submission is stored in a privacy-safe database with HMAC-hashed IPs, consent snapshots, a full audit log, and rate limiting — and the plugin integrates automatically with BlueFairy Anti-Spam for invisible honeypot and time-trap protection. Open source, GPL-2.0-or-later, requires PHP 8.1+ and WordPress 6.4+.
+
+
+CSS CLASS PREFIX
+----------------
+
+bffrm   (bluefairy forms)
+
+All classes in the product description HTML, hub page, FAQ page, and
+sidebar widget card use this prefix to avoid collisions.
+
+
+HTML LONG DESCRIPTION
+---------------------
+
+(Used as WooCommerce product description. Classes match the
+.bffrm-sp-desc .bffrm-dc-* rules in single-product-bluefairy-forms.html)
+
+<div class="bffrm-dc-grid">
+  <div class="bffrm-dc-card">
+    <div class="bffrm-dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3b5fc0" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v6M16 4v6"/></svg></div>
+    <h3>Gutenberg Block &amp; Shortcode</h3>
+    <p>Drop the <code>[bluefairy_form id="1"]</code> shortcode anywhere, or insert the BlueFairy Form block directly in the editor. No page-builder required.</p>
+  </div>
+  <div class="bffrm-dc-card">
+    <div class="bffrm-dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3b5fc0" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+    <h3>Anti-Spam Integration</h3>
+    <p>When BlueFairy Anti-Spam is active, honeypot and time-trap fields are injected automatically. Without it, a self-contained fallback protects every form.</p>
+  </div>
+  <div class="bffrm-dc-card">
+    <div class="bffrm-dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3b5fc0" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+    <h3>GDPR-Safe Submissions</h3>
+    <p>IPs are HMAC-hashed before storage. Consent text and timestamp are snapshotted per submission. GDPR personal data exporter and eraser included.</p>
+  </div>
+  <div class="bffrm-dc-card">
+    <div class="bffrm-dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3b5fc0" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <h3>DB-Backed Rate Limiting</h3>
+    <p>Atomic <code>INSERT ON DUPLICATE KEY UPDATE</code> per IP per minute. No transients, no race conditions. Configurable limit per form.</p>
+  </div>
+  <div class="bffrm-dc-card">
+    <div class="bffrm-dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3b5fc0" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg></div>
+    <h3>Admin Submissions Log</h3>
+    <p>Every submission appears in a searchable, paginated WP_List_Table. View payload, mark read, bulk-delete, or filter by form and status.</p>
+  </div>
+  <div class="bffrm-dc-card">
+    <div class="bffrm-dc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3b5fc0" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+    <h3>Audit Log &amp; WP-CLI</h3>
+    <p>Every admin action is written to an audit log table. Run <code>wp bluefairy-forms doctor</code> to verify table integrity on any install.</p>
+  </div>
+</div>
+
+<div class="bffrm-dc-shots">
+  <figure>
+    <img src="PLACEHOLDER_FORMS_MAIN" alt="BlueFairy Forms — Admin forms list">
+    <figcaption>Forms list — create and manage forms from the WP admin</figcaption>
+  </figure>
+  <figure>
+    <img src="PLACEHOLDER_SUBMISSIONS" alt="BlueFairy Forms — Submissions log">
+    <figcaption>Submissions log — searchable, paginated, with GDPR tools</figcaption>
+  </figure>
+</div>
+
+<div class="bffrm-dc-included">
+  <h3>What&rsquo;s included</h3>
+  <ul>
+    <li>Gutenberg block + <code>[bluefairy_form]</code> shortcode</li>
+    <li>Unlimited forms with custom fields</li>
+    <li>Text, email, textarea, select, radio, checkbox, tel, url, number, date field types</li>
+    <li>Anti-Spam plugin integration (honeypot + time trap)</li>
+    <li>Self-contained spam fallback when Anti-Spam not active</li>
+    <li>DB-backed atomic rate limiting per IP per form</li>
+    <li>GDPR exporter &amp; eraser</li>
+    <li>Consent text snapshot per submission</li>
+    <li>Submissions log (WP_List_Table, paginated)</li>
+    <li>Admin email notification on new submission</li>
+    <li>Audit log for all admin actions</li>
+    <li>WP-CLI <code>doctor</code> command</li>
+    <li>Multisite compatible</li>
+    <li>GPL-2.0-or-later &middot; PHP 8.1+ &middot; WordPress 6.4+</li>
+  </ul>
+</div>
