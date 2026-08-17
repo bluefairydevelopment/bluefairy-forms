@@ -1,0 +1,154 @@
+/**
+ * BlueFairy Forms — front-end styles.
+ * Loaded automatically by block.json when the block is present on a page.
+ * Also manually enqueued inside the shortcode callback.
+ */
+
+/* Wrapper */
+.bffrm-wrap {
+	max-width: 640px;
+}
+
+/* Error and success banners */
+.bffrm-error,
+.bffrm-success {
+	padding: 0.75em 1em;
+	border-radius: 3px;
+	margin-bottom: 1.25em;
+	font-size: 0.95em;
+}
+
+.bffrm-error {
+	background: #fef2f2;
+	border: 1px solid #fca5a5;
+	color: #991b1b;
+}
+
+.bffrm-success {
+	background: #f0fdf4;
+	border: 1px solid #86efac;
+	color: #166534;
+}
+
+/* Form fields */
+.bffrm-field {
+	margin-bottom: 1.25em;
+}
+
+.bffrm-field label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 0.35em;
+}
+
+.bffrm-required {
+	color: #dc2626;
+	margin-left: 0.1em;
+}
+
+.bffrm-field input[type="text"],
+.bffrm-field input[type="email"],
+.bffrm-field input[type="tel"],
+.bffrm-field input[type="url"],
+.bffrm-field input[type="number"],
+.bffrm-field input[type="date"],
+.bffrm-field select,
+.bffrm-field textarea {
+	width: 100%;
+	max-width: 100%;
+	padding: 0.5em 0.75em;
+	border: 1px solid #d1d5db;
+	border-radius: 4px;
+	font-size: 1em;
+	font-family: inherit;
+	color: inherit;
+	background: #fff;
+	box-sizing: border-box;
+	transition: border-color 0.15s ease;
+}
+
+.bffrm-field input:focus,
+.bffrm-field select:focus,
+.bffrm-field textarea:focus {
+	outline: none;
+	border-color: #6366f1;
+	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.bffrm-field textarea {
+	min-height: 8em;
+	resize: vertical;
+}
+
+/* Radio and checkbox labels */
+.bffrm-radio-label,
+.bffrm-checkbox-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4em;
+	font-weight: normal;
+	cursor: pointer;
+	margin-bottom: 0.35em;
+}
+
+.bffrm-field-radio .bffrm-radio-label {
+	display: flex;
+}
+
+/* Consent field */
+.bffrm-consent label {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 0.5em;
+	font-weight: normal;
+}
+
+/* Submit button */
+.bffrm-btn-submit {
+	display: inline-block;
+	padding: 0.6em 1.5em;
+	background: #6366f1;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	font-size: 1em;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.15s ease;
+}
+
+.bffrm-btn-submit:hover,
+.bffrm-btn-submit:focus {
+	background: #4f46e5;
+	outline: none;
+}
+
+/* Honeypot — hide visually and from AT (Anti-Spam class name for compatibility). */
+.bfas-hp-wrap {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	overflow: hidden !important;
+	clip: rect(0, 0, 0, 0) !important;
+	white-space: nowrap !important;
+	border: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+/* Placeholder shown in block editor when no form ID is set */
+.bffrm-placeholder {
+	padding: 1em;
+	background: #f9fafb;
+	border: 1px dashed #d1d5db;
+	border-radius: 4px;
+	color: #6b7280;
+	font-style: italic;
+}
+
+/* Admin list table status badges */
+.bffrm-status-active   { color: #166534; font-weight: 600; }
+.bffrm-status-deleted  { color: #9ca3af; }
+.bffrm-status-new      { color: #1d4ed8; font-weight: 600; }
+.bffrm-status-read     { color: #374151; }
+.bffrm-status-erased   { color: #9ca3af; font-style: italic; }

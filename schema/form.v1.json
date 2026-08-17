@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://bluefairydevelopment.com/schemas/bffrm-form.v1.json",
+  "title": "BlueFairy Form Config",
+  "type": "object",
+  "required": ["schema_version", "fields"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version. Must be '1.0'."
+    },
+    "submit_label": {
+      "type": "string",
+      "default": "Send",
+      "description": "Text displayed on the submit button."
+    },
+    "success_message": {
+      "type": "string",
+      "description": "Message shown to the user after successful submission."
+    },
+    "redirect_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Optional: redirect to this URL instead of showing success_message."
+    },
+    "consent_text": {
+      "type": "string",
+      "description": "Optional: GDPR consent checkbox text. When present, a required checkbox is rendered."
+    },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Ordered list of form fields.",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "label"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "Unique field identifier. Used as the HTML name attribute and payload key."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["text", "email", "tel", "url", "textarea", "select", "radio", "checkbox", "number", "date"],
+            "description": "HTML input type."
+          },
+          "label": {
+            "type": "string",
+            "description": "Visible label text."
+          },
+          "placeholder": {
+            "type": "string",
+            "description": "Optional placeholder text."
+          },
+          "required": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the field must be filled in."
+          },
+          "pattern": {
+            "type": "string",
+            "description": "HTML5 pattern attribute (regex, no delimiters)."
+          },
+          "minlength": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Minimum character count."
+          },
+          "maxlength": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Maximum character count."
+          },
+          "options": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Options list for select and radio fields."
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

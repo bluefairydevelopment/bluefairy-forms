@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "bluefairy/forms",
+  "version": "1.0.0",
+  "title": "BlueFairy Form",
+  "category": "widgets",
+  "description": "Embed a BlueFairy Form by ID.",
+  "keywords": ["form", "contact", "bluefairy"],
+  "textdomain": "bluefairy-forms",
+  "attributes": {
+    "formId": {
+      "type": "integer",
+      "default": 0
+    }
+  },
+  "render": "file:./render.php",
+  "editorScript": "file:./index.js",
+  "style": "file:./style.css",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "example": {
+    "attributes": {
+      "formId": 1
+    }
+  }
+}

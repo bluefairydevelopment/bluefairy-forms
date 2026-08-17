@@ -1,0 +1,191 @@
+<?php
+declare(strict_types=1);
+
+namespace BlueFairy\Forms;
+
+/**
+ * Renders the HTML form output.
+ * Used by both the Gutenberg block (via render.php) and the shortcode callback.
+ */
+class Renderer
+{
+    /**
+     * Render a form by its ID, returning the complete HTML string.
+     */
+    public static function render_form(int $form_id): string
+    {
+        $repo = new FormRepository();
+        $form = $repo->find($form_id);
+
+        if (null === $form) {
+            return '';
+        }
+
+        $config = json_decode((string) $form['config_json'], true);
+        if (! is_array($config)) {
+            return '';
+        }
+
+        $settings    = new Settings();
+        $spam        = new SpamChecker($settings);
+        $form_type   = 'bffrm_' . $form_id;
+        $action_url  = esc_url(admin_url('admin-post.php'));
+        $referer_url = esc_url(wp_unslash($_SERVER['REQUEST_URI'] ?? ''));
+
+        // Error / success state from query string.
+        $error   = isset($_GET['bffrm_error']) ? sanitize_key((string) $_GET['bffrm_error']) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+        $field   = isset($_GET['field']) ? sanitize_key((string) $_GET['field']) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+        $success = ! empty($_GET['bffrm_success']); // phpcs:ignore WordPress.Security.NonceVerification
+
+        // Success message.
+        if ($success) {
+            $msg = ! empty($config['success_message'])
+                ? esc_html($config['success_message'])
+                : esc_html__('Thank you! Your message has been sent.', 'bluefairy-forms');
+            return '<div class="bffrm-success" role="alert">' . $msg . '</div>';
+        }
+
+        ob_start();
+        ?>
+        <div class="bffrm-wrap" id="bffrm-<?php echo esc_attr((string) $form_id); ?>">
+            <?php if ($error): ?>
+                <div class="bffrm-error" role="alert">
+                    <?php echo esc_html(self::error_message($error, $field)); ?>
+                </div>
+            <?php endif; ?>
+
+            <form
+                method="post"
+                action="<?php echo $action_url; ?>"
+                class="bffrm-form"
+                novalidate
+                data-bffrm-id="<?php echo esc_attr((string) $form_id); ?>"
+            >
+                <input type="hidden" name="action" value="bffrm_submit">
+                <input type="hidden" name="bffrm_form_id" value="<?php echo esc_attr((string) $form_id); ?>">
+                <?php wp_nonce_field('bffrm_submit_' . $form_id, 'bffrm_nonce'); ?>
+                <input type="hidden" name="_wp_http_referer" value="<?php echo $referer_url; ?>">
+
+                <?php foreach ($config['fields'] as $field_def): ?>
+                    <?php self::render_field($field_def); ?>
+                <?php endforeach; ?>
+
+                <?php if (! empty($config['consent_text'])): ?>
+                    <div class="bffrm-field bffrm-consent">
+                        <label>
+                            <input type="checkbox" name="bffrm_consent" value="1" required>
+                            <?php echo wp_kses_post($config['consent_text']); ?>
+                        </label>
+                    </div>
+                <?php endif; ?>
+
+                <?php
+                // Spam protection fields (honeypot + timetrap).
+                $spam->render_fields($form_type);
+                ?>
+
+                <div class="bffrm-field bffrm-submit">
+                    <button type="submit" class="bffrm-btn-submit">
+                        <?php echo esc_html($config['submit_label'] ?? __('Send', 'bluefairy-forms')); ?>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    /**
+     * Render a single form field.
+     *
+     * @param array<string, mixed> $field
+     */
+    private static function render_field(array $field): void
+    {
+        $id          = sanitize_key((string) ($field['id'] ?? ''));
+        $type        = sanitize_key((string) ($field['type'] ?? 'text'));
+        $label       = esc_html((string) ($field['label'] ?? ''));
+        $placeholder = esc_attr((string) ($field['placeholder'] ?? ''));
+        $required    = (bool) ($field['required'] ?? false);
+        $req_attr    = $required ? ' required aria-required="true"' : '';
+        $field_id    = 'bffrm_field_' . $id;
+
+        echo '<div class="bffrm-field bffrm-field-' . esc_attr($type) . '">';
+        echo '<label for="' . esc_attr($field_id) . '">' . $label;
+        if ($required) {
+            echo '<span class="bffrm-required" aria-hidden="true"> *</span>';
+        }
+        echo '</label>';
+
+        if ($type === 'textarea') {
+            $minlength = isset($field['minlength']) ? ' minlength="' . (int) $field['minlength'] . '"' : '';
+            $maxlength = isset($field['maxlength']) ? ' maxlength="' . (int) $field['maxlength'] . '"' : '';
+            echo '<textarea'
+                . ' id="' . esc_attr($field_id) . '"'
+                . ' name="' . esc_attr($id) . '"'
+                . ' placeholder="' . $placeholder . '"'
+                . $req_attr . $minlength . $maxlength
+                . '></textarea>';
+        } elseif ($type === 'select') {
+            echo '<select id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '"' . $req_attr . '>';
+            echo '<option value="">' . esc_html__('— Select —', 'bluefairy-forms') . '</option>';
+            foreach ((array) ($field['options'] ?? []) as $opt) {
+                echo '<option value="' . esc_attr((string) $opt) . '">' . esc_html((string) $opt) . '</option>';
+            }
+            echo '</select>';
+        } elseif ($type === 'radio') {
+            foreach ((array) ($field['options'] ?? []) as $i => $opt) {
+                $radio_id = $field_id . '_' . (int) $i;
+                echo '<label class="bffrm-radio-label">';
+                echo '<input type="radio" id="' . esc_attr($radio_id) . '" name="' . esc_attr($id) . '" value="' . esc_attr((string) $opt) . '"' . $req_attr . '>';
+                echo ' ' . esc_html((string) $opt);
+                echo '</label>';
+            }
+        } elseif ($type === 'checkbox') {
+            echo '<label class="bffrm-checkbox-label">';
+            echo '<input type="checkbox" id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '" value="1"' . $req_attr . '>';
+            echo ' ' . $label;
+            echo '</label>';
+        } else {
+            // text, email, tel, url, number, date.
+            $attrs  = ' id="' . esc_attr($field_id) . '"';
+            $attrs .= ' type="' . esc_attr($type) . '"';
+            $attrs .= ' name="' . esc_attr($id) . '"';
+            $attrs .= ' placeholder="' . $placeholder . '"';
+            if (isset($field['pattern'])) {
+                $attrs .= ' pattern="' . esc_attr((string) $field['pattern']) . '"';
+            }
+            if (isset($field['minlength'])) {
+                $attrs .= ' minlength="' . (int) $field['minlength'] . '"';
+            }
+            if (isset($field['maxlength'])) {
+                $attrs .= ' maxlength="' . (int) $field['maxlength'] . '"';
+            }
+            $attrs .= $req_attr;
+
+            echo '<input' . $attrs . '>';
+        }
+
+        echo '</div>';
+    }
+
+    /**
+     * Human-readable error message for a given error code.
+     */
+    private static function error_message(string $error, string $field = ''): string
+    {
+        return match ($error) {
+            'nonce_fail'   => __('Security check failed. Please refresh the page and try again.', 'bluefairy-forms'),
+            'rate_limit'   => __('Too many submissions. Please wait a minute and try again.', 'bluefairy-forms'),
+            'spam'         => __('Your submission was flagged as spam. Please try again.', 'bluefairy-forms'),
+            'validation'   => $field
+                ? sprintf(
+                    /* translators: %s: field label */
+                    __('Please check the "%s" field and try again.', 'bluefairy-forms'),
+                    esc_html($field)
+                )
+                : __('Please check the form fields and try again.', 'bluefairy-forms'),
+            default        => __('An error occurred. Please try again.', 'bluefairy-forms'),
+        };
+    }
+}
