@@ -75,7 +75,7 @@ class SubmissionsListTable extends \WP_List_Table
     /**
      * @param array<string, mixed> $item
      */
-    public function column_default(mixed $item, string $column_name): string
+    public function column_default(mixed $item, mixed $column_name): string
     {
         return esc_html((string) ($item[$column_name] ?? ''));
     }
