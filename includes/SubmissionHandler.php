@@ -61,7 +61,7 @@ class SubmissionHandler
         // ------------------------------------------------------------------ //
         // C7 — Nonce verification via wp_verify_nonce(), NOT check_admin_referer().
         // ------------------------------------------------------------------ //
-        $nonce = isset($_POST['bffrm_nonce']) ? (string) $_POST['bffrm_nonce'] : '';
+        $nonce = isset($_POST['bffrm_nonce']) ? wp_unslash( (string) $_POST['bffrm_nonce'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce value, passed directly to wp_verify_nonce()
 
         if (! wp_verify_nonce($nonce, 'bffrm_submit_' . $form_id)) {
             wp_safe_redirect(add_query_arg('bffrm_error', 'nonce_fail', $safe_referer));
@@ -79,7 +79,7 @@ class SubmissionHandler
             ? hash_hmac('sha256', $ip, $hmac_key)
             : hash('sha256', $ip);
 
-        $ua      = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+        $ua      = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field( wp_unslash( (string) $_SERVER['HTTP_USER_AGENT'] ) ) : '';
         $ua_hash = $hmac_key !== ''
             ? hash_hmac('sha256', $ua, $hmac_key)
             : hash('sha256', $ua);
@@ -149,7 +149,7 @@ class SubmissionHandler
             if ($field_id === '') {
                 continue;
             }
-            $raw   = isset( $_POST[ $field_id ] ) ? wp_unslash( (string) $_POST[ $field_id ] ) : '';
+            $raw   = isset( $_POST[ $field_id ] ) ? wp_unslash( (string) $_POST[ $field_id ] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized via sanitize_textarea_field() on next line
             $value = sanitize_textarea_field( $raw );
 
             if ($value !== '') {
@@ -234,7 +234,7 @@ class SubmissionHandler
 
         foreach ($candidates as $key) {
             if (! empty($_SERVER[$key])) {
-                $ip = trim(explode(',', (string) $_SERVER[$key])[0]);
+                $ip = trim(explode(',', wp_unslash( (string) $_SERVER[$key] ))[0]); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- IP validated via filter_var() on next line
                 if (filter_var($ip, FILTER_VALIDATE_IP)) {
                     return $ip;
                 }

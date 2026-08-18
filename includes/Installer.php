@@ -150,9 +150,9 @@ class Installer
     {
         global $wpdb;
 
-        $table    = $wpdb->prefix . 'bffrm_forms';
+        $table = esc_sql( $wpdb->prefix . 'bffrm_forms' );
         $existing = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-            $wpdb->prepare("SELECT COUNT(*) FROM `{$table}` WHERE slug = %s", 'contact')
+            $wpdb->prepare("SELECT COUNT(*) FROM `{$table}` WHERE slug = %s", 'contact') // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         );
 
         if ((int) $existing > 0) {

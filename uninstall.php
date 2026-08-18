@@ -7,23 +7,23 @@ if (! defined('WP_UNINSTALL_PLUGIN')) {
 
 global $wpdb;
 
-$settings = get_option('bffrm_settings', []);
-$remove   = is_array($settings) && ! empty($settings['remove_data_on_uninstall']);
+$bffrm_settings = get_option('bffrm_settings', []);
+$bffrm_remove   = is_array($bffrm_settings) && ! empty($bffrm_settings['remove_data_on_uninstall']);
 
-if (! $remove) {
+if (! $bffrm_remove) {
     return;
 }
 
 // Drop tables.
-$tables = [
+$bffrm_tables = [
     $wpdb->prefix . 'bffrm_audit_log',
     $wpdb->prefix . 'bffrm_rate_limits',
     $wpdb->prefix . 'bffrm_submissions',
     $wpdb->prefix . 'bffrm_forms',
 ];
 
-foreach ($tables as $table) {
-    $wpdb->query("DROP TABLE IF EXISTS `{$table}`"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+foreach ($bffrm_tables as $bffrm_table) {
+    $wpdb->query("DROP TABLE IF EXISTS `{$bffrm_table}`"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 }
 
 // Remove options.

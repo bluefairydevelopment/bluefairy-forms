@@ -57,7 +57,7 @@ class SubmissionRepository
 
         $row = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "SELECT * FROM `{$this->table}` WHERE `id` = %d LIMIT 1",
+                "SELECT * FROM `{$this->table}` WHERE `id` = %d LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $id
             ),
             ARRAY_A
@@ -79,10 +79,7 @@ class SubmissionRepository
         if ($form_id > 0) {
             $rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
                 $wpdb->prepare(
-                    "SELECT s.*, f.title AS form_title FROM `{$this->table}` s
-                    LEFT JOIN `{$wpdb->prefix}bffrm_forms` f ON f.id = s.form_id
-                    WHERE s.form_id = %d
-                    ORDER BY s.submitted_at DESC LIMIT %d OFFSET %d",
+                    "SELECT s.*, f.title AS form_title FROM `{$this->table}` s LEFT JOIN `{$wpdb->prefix}bffrm_forms` f ON f.id = s.form_id WHERE s.form_id = %d ORDER BY s.submitted_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     $form_id,
                     $limit,
                     $offset
@@ -92,9 +89,7 @@ class SubmissionRepository
         } else {
             $rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
                 $wpdb->prepare(
-                    "SELECT s.*, f.title AS form_title FROM `{$this->table}` s
-                    LEFT JOIN `{$wpdb->prefix}bffrm_forms` f ON f.id = s.form_id
-                    ORDER BY s.submitted_at DESC LIMIT %d OFFSET %d",
+                    "SELECT s.*, f.title AS form_title FROM `{$this->table}` s LEFT JOIN `{$wpdb->prefix}bffrm_forms` f ON f.id = s.form_id ORDER BY s.submitted_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     $limit,
                     $offset
                 ),
@@ -115,13 +110,13 @@ class SubmissionRepository
         if ($form_id > 0) {
             return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
                 $wpdb->prepare(
-                    "SELECT COUNT(*) FROM `{$this->table}` WHERE form_id = %d",
+                    "SELECT COUNT(*) FROM `{$this->table}` WHERE form_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     $form_id
                 )
             );
         }
 
-        return (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$this->table}`"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        return (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$this->table}`"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     }
 
     /**
@@ -157,7 +152,7 @@ class SubmissionRepository
 
         $rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "SELECT `id`, `form_id`, `submitted_at`, `email`, `payload_plaintext`, `status` FROM `{$this->table}` WHERE `email_hash` = %s ORDER BY `submitted_at` DESC",
+                "SELECT `id`, `form_id`, `submitted_at`, `email`, `payload_plaintext`, `status` FROM `{$this->table}` WHERE `email_hash` = %s ORDER BY `submitted_at` DESC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $email_hash
             ),
             ARRAY_A
@@ -176,7 +171,7 @@ class SubmissionRepository
 
         $result = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "UPDATE `{$this->table}` SET `email` = NULL, `email_hash` = NULL, `ip_hash` = NULL, `user_agent_hash` = NULL, `payload_plaintext` = NULL, `consent_text_snapshot` = NULL, `status` = 'erased' WHERE `email_hash` = %s",
+                "UPDATE `{$this->table}` SET `email` = NULL, `email_hash` = NULL, `ip_hash` = NULL, `user_agent_hash` = NULL, `payload_plaintext` = NULL, `consent_text_snapshot` = NULL, `status` = 'erased' WHERE `email_hash` = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $email_hash
             )
         );

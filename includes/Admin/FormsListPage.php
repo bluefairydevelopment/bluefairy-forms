@@ -69,7 +69,7 @@ class FormsListPage
 
             $title  = sanitize_text_field( wp_unslash( (string) ( $_POST['bffrm_title'] ?? '' ) ) );
             $slug   = sanitize_key( wp_unslash( (string) ( $_POST['bffrm_slug'] ?? '' ) ) );
-            $config = wp_unslash( (string) ( $_POST['bffrm_config'] ?? '' ) );
+            $config = wp_unslash( (string) ( $_POST['bffrm_config'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON, validated via json_decode() below
 
             if ($title && $slug) {
                 // Validate JSON.
@@ -109,7 +109,7 @@ class FormsListPage
             check_admin_referer('bffrm_save_form');
 
             $title  = sanitize_text_field( wp_unslash( (string) ( $_POST['bffrm_title'] ?? '' ) ) );
-            $config = wp_unslash( (string) ( $_POST['bffrm_config'] ?? '' ) );
+            $config = wp_unslash( (string) ( $_POST['bffrm_config'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON, validated via json_decode() below
             $decoded = json_decode($config, true);
 
             if ($title && is_array($decoded)) {
@@ -210,7 +210,7 @@ class FormsListPage
             return;
         }
 
-        if (! wp_verify_nonce((string) $_GET['_wpnonce'], 'bffrm_delete_form')) {
+        if (! wp_verify_nonce( sanitize_text_field( wp_unslash( (string) $_GET['_wpnonce'] ) ), 'bffrm_delete_form')) {
             wp_die(esc_html__('Security check failed.', 'bluefairy-forms-lite'));
         }
 

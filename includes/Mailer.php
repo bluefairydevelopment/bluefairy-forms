@@ -35,9 +35,9 @@ class Mailer
 
         $form_title = esc_html((string) ($form['title'] ?? 'Unknown Form'));
 
-        /* translators: %s: form title */
         $subject = sprintf(
-            __('[%s] New form submission: %s', 'bluefairy-forms-lite'),
+            // translators: %1$s is the site name, %2$s is the form title.
+            __('[%1$s] New form submission: %2$s', 'bluefairy-forms-lite'),
             get_bloginfo('name'),
             $form_title
         );

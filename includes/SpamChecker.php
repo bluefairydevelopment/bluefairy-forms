@@ -98,8 +98,8 @@ class SpamChecker
     {
         $name = esc_attr($this->honeypot_field_name($form_type));
         echo '<div class="bfas-hp-wrap" aria-hidden="true">';
-        echo '<label for="bfas_' . $name . '">' . esc_html__('Leave this field empty', 'bluefairy-forms') . '</label>';
-        echo '<input type="text" id="bfas_' . $name . '" name="' . $name . '" value="" class="bfas-hp-field" aria-hidden="true" tabindex="-1" autocomplete="off">';
+        echo '<label for="bfas_' . esc_attr( $name ) . '">' . esc_html__('Leave this field empty', 'bluefairy-forms-lite') . '</label>';
+        echo '<input type="text" id="bfas_' . esc_attr( $name ) . '" name="' . esc_attr( $name ) . '" value="" class="bfas-hp-field" aria-hidden="true" tabindex="-1" autocomplete="off">';
         echo '</div>';
     }
 

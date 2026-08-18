@@ -27,7 +27,7 @@ class FormRepository
 
         $row = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "SELECT * FROM `{$this->table}` WHERE `id` = %d AND `status` = 'active' LIMIT 1",
+                "SELECT * FROM `{$this->table}` WHERE `id` = %d AND `status` = 'active' LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $id
             ),
             ARRAY_A
@@ -47,7 +47,7 @@ class FormRepository
 
         $row = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "SELECT * FROM `{$this->table}` WHERE `slug` = %s AND `status` = 'active' LIMIT 1",
+                "SELECT * FROM `{$this->table}` WHERE `slug` = %s AND `status` = 'active' LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $slug
             ),
             ARRAY_A
@@ -67,7 +67,7 @@ class FormRepository
 
         $rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "SELECT `id`, `slug`, `title`, `status`, `created_at`, `updated_at` FROM `{$this->table}` ORDER BY `id` DESC LIMIT %d OFFSET %d",
+                "SELECT `id`, `slug`, `title`, `status`, `created_at`, `updated_at` FROM `{$this->table}` ORDER BY `id` DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $limit,
                 $offset
             ),
@@ -83,7 +83,7 @@ class FormRepository
     public function count(): int
     {
         global $wpdb;
-        return (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$this->table}`"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        return (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$this->table}`"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     }
 
     /**

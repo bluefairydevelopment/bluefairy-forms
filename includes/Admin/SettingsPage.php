@@ -122,15 +122,17 @@ class SettingsPage
      */
     private function save_settings(): void
     {
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce verified via check_admin_referer() in render() before this method is called
         $input = [
             'enabled'                  => ! empty( $_POST['bffrm_enabled'] ),
             'notification_email'       => sanitize_email( wp_unslash( (string) ( $_POST['bffrm_notification_email'] ?? '' ) ) ),
-            'rate_limit_max'           => min( 60, max( 1, (int) ( $_POST['bffrm_rate_limit_max'] ?? 5 ) ) ),
-            'min_time_seconds'         => min( 30, max( 1, (int) ( $_POST['bffrm_min_time_seconds'] ?? 3 ) ) ),
+            'rate_limit_max'           => min( 60, max( 1, absint( wp_unslash( $_POST['bffrm_rate_limit_max'] ?? 5 ) ) ) ),
+            'min_time_seconds'         => min( 30, max( 1, absint( wp_unslash( $_POST['bffrm_min_time_seconds'] ?? 3 ) ) ) ),
             'honeypot_enabled'         => ! empty( $_POST['bffrm_honeypot_enabled'] ),
             'debug_log'                => ! empty( $_POST['bffrm_debug_log'] ),
             'remove_data_on_uninstall' => ! empty( $_POST['bffrm_remove_data'] ),
         ];
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
 
         $this->settings->save($input);
     }

@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Plugin Name:       BlueFairy Forms Lite
  * Plugin URI:        https://bluefairydevelopment.com/plugins/bluefairy-forms-lite/
  * Description:       Zero-asset-bloat WordPress forms plugin. Gutenberg block, shortcode, GDPR-safe submissions, spam protection, and admin submissions list — no jQuery, no bloat.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Blue Fairy Development
@@ -16,13 +16,11 @@ declare(strict_types=1);
  * Domain Path:       /languages
  */
 
-namespace BlueFairy\Forms;
-
 if (! defined('ABSPATH')) {
     exit;
 }
 
-define('BFFRM_VERSION', '1.1.0');
+define('BFFRM_VERSION', '1.1.1');
 define('BFFRM_FILE', __FILE__);
 define('BFFRM_DIR', plugin_dir_path(__FILE__));
 define('BFFRM_URL', plugin_dir_url(__FILE__));
@@ -39,23 +37,23 @@ spl_autoload_register(static function (string $class): void {
 });
 
 /**
- * Public helper — used by SpamChecker to detect the plugin without class_exists().
+ * Global helper — allows Pro and third-party code to detect Lite without class_exists().
  */
-function bffrm_plugin(): Plugin
+function bffrm_plugin(): BlueFairy\Forms\Plugin
 {
-    return Plugin::instance();
+    return BlueFairy\Forms\Plugin::instance();
 }
 
 // Activation / deactivation hooks.
 register_activation_hook(__FILE__, static function (): void {
-    ( new Installer() )->activate();
+    ( new BlueFairy\Forms\Installer() )->activate();
 });
 
 register_deactivation_hook(__FILE__, static function (): void {
-    ( new Installer() )->deactivate();
+    ( new BlueFairy\Forms\Installer() )->deactivate();
 });
 
 // Boot the plugin after plugins are loaded so other plugins are available.
 add_action('plugins_loaded', static function (): void {
-    Plugin::instance()->boot();
+    BlueFairy\Forms\Plugin::instance()->boot();
 });

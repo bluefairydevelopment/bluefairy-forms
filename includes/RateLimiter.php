@@ -44,9 +44,7 @@ class RateLimiter
         // inserts with count=1 otherwise.
         $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "INSERT INTO `{$this->table}` (`ip_hash`, `form_id`, `window_key`, `count`, `expires_at`)
-                VALUES (%s, %d, %s, 1, %s)
-                ON DUPLICATE KEY UPDATE `count` = `count` + 1, `expires_at` = VALUES(`expires_at`)",
+                "INSERT INTO `{$this->table}` (`ip_hash`, `form_id`, `window_key`, `count`, `expires_at`) VALUES (%s, %d, %s, 1, %s) ON DUPLICATE KEY UPDATE `count` = `count` + 1, `expires_at` = VALUES(`expires_at`)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $ip_hash,
                 $form_id,
                 $window_key,
@@ -57,7 +55,7 @@ class RateLimiter
         // Read back the current count for this window.
         $count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "SELECT `count` FROM `{$this->table}` WHERE `ip_hash` = %s AND `form_id` = %d AND `window_key` = %s LIMIT 1",
+                "SELECT `count` FROM `{$this->table}` WHERE `ip_hash` = %s AND `form_id` = %d AND `window_key` = %s LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $ip_hash,
                 $form_id,
                 $window_key
@@ -65,7 +63,7 @@ class RateLimiter
         );
 
         // Prune expired rows occasionally (1% of requests) to keep the table small.
-        if (mt_rand(1, 100) === 1) {
+        if (wp_rand(1, 100) === 1) {
             $this->prune_expired();
         }
 
@@ -79,8 +77,8 @@ class RateLimiter
     {
         global $wpdb;
 
-        $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-            "DELETE FROM `{$this->table}` WHERE `expires_at` < UTC_TIMESTAMP() LIMIT 500"
+        $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
+            "DELETE FROM `{$this->table}` WHERE `expires_at` < UTC_TIMESTAMP() LIMIT 500" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         );
     }
 }

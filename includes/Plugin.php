@@ -33,7 +33,6 @@ final class Plugin
      */
     public function boot(): void
     {
-        $this->load_textdomain();
         $this->register_block();
         $this->register_shortcode();
         $this->register_submission_handler();
@@ -44,15 +43,6 @@ final class Plugin
         if (is_admin()) {
             $this->boot_admin();
         }
-    }
-
-    private function load_textdomain(): void
-    {
-        load_plugin_textdomain(
-            'bluefairy-forms-lite',
-            false,
-            dirname(plugin_basename(BFFRM_FILE)) . '/languages'
-        );
     }
 
     private function register_block(): void

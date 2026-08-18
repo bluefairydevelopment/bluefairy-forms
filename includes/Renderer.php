@@ -50,7 +50,7 @@ class Renderer
         $spam        = new SpamChecker($settings);
         $form_type   = 'bffrm_' . $form_id;
         $action_url  = esc_url(admin_url('admin-post.php'));
-        $referer_url = esc_url(wp_unslash($_SERVER['REQUEST_URI'] ?? ''));
+        $referer_url = sanitize_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
         // Use multipart/form-data when any field is of type 'file'.
         $has_file_field = false;
@@ -60,8 +60,6 @@ class Renderer
                 break;
             }
         }
-        $enctype_attr = $has_file_field ? ' enctype="multipart/form-data"' : '';
-
         // Error / success state from query string.
         $error   = isset($_GET['bffrm_error']) ? sanitize_key((string) $_GET['bffrm_error']) : ''; // phpcs:ignore WordPress.Security.NonceVerification
         $field   = isset($_GET['field']) ? sanitize_key((string) $_GET['field']) : ''; // phpcs:ignore WordPress.Security.NonceVerification
@@ -86,16 +84,16 @@ class Renderer
 
             <form
                 method="post"
-                action="<?php echo $action_url; ?>"
+                action="<?php echo esc_url( $action_url ); ?>"
                 class="bffrm-form"
                 novalidate
                 data-bffrm-id="<?php echo esc_attr((string) $form_id); ?>"
-                <?php echo $enctype_attr; ?>
+                <?php if ( $has_file_field ) : ?>enctype="multipart/form-data"<?php endif; ?>
             >
                 <input type="hidden" name="action" value="bffrm_submit">
                 <input type="hidden" name="bffrm_form_id" value="<?php echo esc_attr((string) $form_id); ?>">
                 <?php wp_nonce_field('bffrm_submit_' . $form_id, 'bffrm_nonce'); ?>
-                <input type="hidden" name="_wp_http_referer" value="<?php echo $referer_url; ?>">
+                <input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( $referer_url ); ?>">
 
                 <?php foreach ($config['fields'] as $field_def): ?>
                     <?php self::render_field($field_def); ?>
@@ -142,7 +140,7 @@ class Renderer
         $field_id    = 'bffrm_field_' . $id;
 
         echo '<div class="bffrm-field bffrm-field-' . esc_attr($type) . '">';
-        echo '<label for="' . esc_attr($field_id) . '">' . $label;
+        echo '<label for="' . esc_attr($field_id) . '">' . esc_html( $label );
         if ($required) {
             echo '<span class="bffrm-required" aria-hidden="true"> *</span>';
         }
@@ -154,11 +152,14 @@ class Renderer
             echo '<textarea'
                 . ' id="' . esc_attr($field_id) . '"'
                 . ' name="' . esc_attr($id) . '"'
-                . ' placeholder="' . $placeholder . '"'
-                . $req_attr . $minlength . $maxlength
+                . ' placeholder="' . esc_attr( $placeholder ) . '"'
+                . ( $required ? ' required aria-required="true"' : '' )
+                . ( isset($field['minlength']) ? ' minlength="' . (int) $field['minlength'] . '"' : '' )
+                . ( isset($field['maxlength']) ? ' maxlength="' . (int) $field['maxlength'] . '"' : '' )
                 . '></textarea>';
         } elseif ($type === 'select') {
-            echo '<select id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '"' . $req_attr . '>';
+            echo '<select id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '"'
+                . ( $required ? ' required aria-required="true"' : '' ) . '>';
             echo '<option value="">' . esc_html__('— Select —', 'bluefairy-forms-lite') . '</option>';
             foreach ((array) ($field['options'] ?? []) as $opt) {
                 echo '<option value="' . esc_attr((string) $opt) . '">' . esc_html((string) $opt) . '</option>';
@@ -168,24 +169,27 @@ class Renderer
             foreach ((array) ($field['options'] ?? []) as $i => $opt) {
                 $radio_id = $field_id . '_' . (int) $i;
                 echo '<label class="bffrm-radio-label">';
-                echo '<input type="radio" id="' . esc_attr($radio_id) . '" name="' . esc_attr($id) . '" value="' . esc_attr((string) $opt) . '"' . $req_attr . '>';
+                echo '<input type="radio" id="' . esc_attr($radio_id) . '" name="' . esc_attr($id) . '" value="' . esc_attr((string) $opt) . '"'
+                    . ( $required ? ' required aria-required="true"' : '' ) . '>';
                 echo ' ' . esc_html((string) $opt);
                 echo '</label>';
             }
         } elseif ($type === 'checkbox') {
             echo '<label class="bffrm-checkbox-label">';
-            echo '<input type="checkbox" id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '" value="1"' . $req_attr . '>';
-            echo ' ' . $label;
+            echo '<input type="checkbox" id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '" value="1"'
+                . ( $required ? ' required aria-required="true"' : '' ) . '>';
+            echo ' ' . esc_html( $label );
             echo '</label>';
         } elseif ($type === 'file') {
             $accept = ! empty($field['accept']) ? ' accept="' . esc_attr((string) $field['accept']) . '"' : '';
-            echo '<input type="file" id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '"' . $accept . $req_attr . '>';
+            echo '<input type="file" id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '"'
+                . $accept . ( $required ? ' required aria-required="true"' : '' ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $accept is built with esc_attr() on the line above
         } else {
             // text, email, tel, url, number, date.
             $attrs  = ' id="' . esc_attr($field_id) . '"';
             $attrs .= ' type="' . esc_attr($type) . '"';
             $attrs .= ' name="' . esc_attr($id) . '"';
-            $attrs .= ' placeholder="' . $placeholder . '"';
+            $attrs .= ' placeholder="' . esc_attr( $placeholder ) . '"';
             if (isset($field['pattern'])) {
                 $attrs .= ' pattern="' . esc_attr((string) $field['pattern']) . '"';
             }
@@ -195,9 +199,11 @@ class Renderer
             if (isset($field['maxlength'])) {
                 $attrs .= ' maxlength="' . (int) $field['maxlength'] . '"';
             }
-            $attrs .= $req_attr;
+            if ( $required ) {
+                $attrs .= ' required aria-required="true"';
+            }
 
-            echo '<input' . $attrs . '>';
+            echo '<input' . $attrs . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $attrs is built entirely from esc_attr() and (int) casts above
         }
 
         echo '</div>';

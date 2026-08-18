@@ -1,14 +1,14 @@
-=== BlueFairy Forms ===
+=== BlueFairy Forms Lite ===
 Contributors: bluefairydevelopment
 Tags: forms, contact form, form builder, spam protection, GDPR
 Requires at least: 6.4
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Zero-asset-bloat WordPress forms plugin. Build forms with a Gutenberg block or shortcode, with GDPR-safe submissions and spam protection — no jQuery, no bloat.
+Zero-bloat WordPress forms plugin. Gutenberg block, shortcode, GDPR-safe submissions, spam protection — no jQuery, no bloat.
 
 == Description ==
 

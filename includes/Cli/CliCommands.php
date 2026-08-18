@@ -44,7 +44,7 @@ class CliCommands
         // WP-CLI 2.x Formatter implodes raw arrays for 'ids' format, producing 'Array'.
         // Handle ids explicitly so space-separated IDs are returned correctly.
         if ($format === 'ids') {
-            echo implode(' ', array_column($forms, 'id'));
+            echo esc_html( implode(' ', array_column($forms, 'id')) );
             return;
         }
 

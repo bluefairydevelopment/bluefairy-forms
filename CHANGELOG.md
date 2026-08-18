@@ -4,6 +4,13 @@ All notable changes to BlueFairy Forms are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows Semantic Versioning (Major.Minor.Patch).
 
+## [1.1.1] - 2026-08-18
+
+### Fixed
+- `bffrm_plugin()` helper moved to global scope (was accidentally placed in `BlueFairy\Forms` namespace, causing BlueFairy Forms Pro to always display the "Lite not found" admin notice even when Lite was active).
+- Plugin Check (PCP) compliance: output escaping in `Renderer`, `SpamChecker`, `CliCommands`, and block render template; `wp_rand()` replaces `mt_rand()` in `RateLimiter`; nonce verification comments and `wp_unslash()` added throughout; text domain corrected in `SpamChecker`; removed deprecated `load_plugin_textdomain()` call; added ABSPATH guard to `SubmissionsListTable` and `FormsListTable`; translators comments corrected in `Mailer`.
+- `readme.txt` Tested up to updated to 7.0; plugin name corrected in readme header.
+
 ## [1.1.0] - 2026-08-17
 
 ### Added

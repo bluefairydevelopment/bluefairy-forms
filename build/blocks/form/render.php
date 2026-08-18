@@ -15,9 +15,9 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-$form_id = isset($attributes['formId']) ? (int) $attributes['formId'] : 0;
+$bffrm_form_id = isset($attributes['formId']) ? (int) $attributes['formId'] : 0;
 
-if ($form_id < 1) {
+if ($bffrm_form_id < 1) {
     if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST)) {
         echo '<p class="bffrm-placeholder">' . esc_html__('BlueFairy Form: select a form ID in the block settings panel.', 'bluefairy-forms-lite') . '</p>';
     }
@@ -27,4 +27,4 @@ if ($form_id < 1) {
 // Enqueue form styles only when this block is actually rendered on the page.
 wp_enqueue_style('bffrm-form', BFFRM_URL . 'build/blocks/form/style.css', [], BFFRM_VERSION);
 
-echo \BlueFairy\Forms\Renderer::render_form($form_id);
+echo \BlueFairy\Forms\Renderer::render_form($bffrm_form_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_form() returns sanitized HTML
