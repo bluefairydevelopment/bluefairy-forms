@@ -114,7 +114,7 @@ final class Plugin
         if (! defined('WP_CLI') || ! WP_CLI) {
             return;
         }
-        \WP_CLI::add_command('bluefairy-forms', Cli\CliCommands::class);
+        \WP_CLI::add_command('bluefairy-forms-lite', Cli\CliCommands::class);
     }
 
     private function boot_admin(): void
