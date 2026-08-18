@@ -131,6 +131,13 @@ class SubmissionHandler
             exit;
         }
 
+        // Allow Pro to block submission before storage (e.g., form closed, submission limit reached).
+        $block_error = apply_filters( 'bffrm_pre_submit', '', $form_id, $form, $_POST );
+        if ( '' !== $block_error ) {
+            wp_safe_redirect( add_query_arg( 'bffrm_error', sanitize_key( (string) $block_error ), $safe_referer ) );
+            exit;
+        }
+
         // ------------------------------------------------------------------ //
         // Sanitize and collect payload.
         // ------------------------------------------------------------------ //
@@ -186,6 +193,9 @@ class SubmissionHandler
             'submission',
             $submission_id
         );
+
+        // Extension API — Pro hooks here for webhooks, confirmation email, integrations.
+        do_action( 'bffrm_submission_created', $form_id, $submission_id, $form, $payload );
 
         // ------------------------------------------------------------------ //
         // Email notification (M6 — synchronous).

@@ -25,6 +25,10 @@ class Mailer
     public function notify_admin(array $form, array $payload, int $submission_id): void
     {
         $to = (string) $this->settings->get('notification_email', get_option('admin_email'));
+
+        $recipients = apply_filters( 'bffrm_notification_recipients', [ $to ], (int) ( $form['id'] ?? 0 ), $form );
+        $to = implode( ', ', array_filter( array_map( 'sanitize_email', (array) $recipients ) ) );
+
         if (empty($to)) {
             return;
         }

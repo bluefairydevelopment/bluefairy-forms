@@ -90,6 +90,12 @@ class Validator
                     return ['valid' => false, 'error_field' => $id];
                 }
             }
+
+            // Allow Pro to run custom validation (conditional logic, file type, CAPTCHA).
+            $custom_valid = apply_filters( 'bffrm_validate_field', true, $field, $value, $config );
+            if ( true !== $custom_valid ) {
+                return [ 'valid' => false, 'error_field' => $id ];
+            }
         }
 
         return ['valid' => true, 'error_field' => ''];

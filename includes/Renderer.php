@@ -10,6 +10,20 @@ namespace BlueFairy\Forms;
 class Renderer
 {
     /**
+     * Returns the list of supported field types.
+     * Pro uses this to register 'file' via the bffrm_field_types filter.
+     *
+     * @return string[]
+     */
+    public static function get_supported_types(): array
+    {
+        return apply_filters(
+            'bffrm_field_types',
+            [ 'text', 'email', 'tel', 'url', 'number', 'date', 'textarea', 'select', 'radio', 'checkbox' ]
+        );
+    }
+
+    /**
      * Render a form by its ID, returning the complete HTML string.
      */
     public static function render_form(int $form_id): string
@@ -26,11 +40,27 @@ class Renderer
             return '';
         }
 
+        // Allow Pro to replace the form with a scheduling/limit message.
+        $pre_html = apply_filters( 'bffrm_before_render_form', '', $form_id, $config );
+        if ( '' !== $pre_html ) {
+            return $pre_html;
+        }
+
         $settings    = new Settings();
         $spam        = new SpamChecker($settings);
         $form_type   = 'bffrm_' . $form_id;
         $action_url  = esc_url(admin_url('admin-post.php'));
         $referer_url = esc_url(wp_unslash($_SERVER['REQUEST_URI'] ?? ''));
+
+        // Use multipart/form-data when any field is of type 'file'.
+        $has_file_field = false;
+        foreach ( $config['fields'] as $fdef ) {
+            if ( isset( $fdef['type'] ) && $fdef['type'] === 'file' ) {
+                $has_file_field = true;
+                break;
+            }
+        }
+        $enctype_attr = $has_file_field ? ' enctype="multipart/form-data"' : '';
 
         // Error / success state from query string.
         $error   = isset($_GET['bffrm_error']) ? sanitize_key((string) $_GET['bffrm_error']) : ''; // phpcs:ignore WordPress.Security.NonceVerification
@@ -60,6 +90,7 @@ class Renderer
                 class="bffrm-form"
                 novalidate
                 data-bffrm-id="<?php echo esc_attr((string) $form_id); ?>"
+                <?php echo $enctype_attr; ?>
             >
                 <input type="hidden" name="action" value="bffrm_submit">
                 <input type="hidden" name="bffrm_form_id" value="<?php echo esc_attr((string) $form_id); ?>">
@@ -146,6 +177,9 @@ class Renderer
             echo '<input type="checkbox" id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '" value="1"' . $req_attr . '>';
             echo ' ' . $label;
             echo '</label>';
+        } elseif ($type === 'file') {
+            $accept = ! empty($field['accept']) ? ' accept="' . esc_attr((string) $field['accept']) . '"' : '';
+            echo '<input type="file" id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '"' . $accept . $req_attr . '>';
         } else {
             // text, email, tel, url, number, date.
             $attrs  = ' id="' . esc_attr($field_id) . '"';
@@ -185,7 +219,12 @@ class Renderer
                     esc_html($field)
                 )
                 : __('Please check the form fields and try again.', 'bluefairy-forms'),
-            default        => __('An error occurred. Please try again.', 'bluefairy-forms'),
+            default => (string) apply_filters(
+                'bffrm_error_message',
+                __( 'An error occurred. Please try again.', 'bluefairy-forms' ),
+                $error,
+                $field
+            ),
         };
     }
 }

@@ -4,6 +4,13 @@ All notable changes to BlueFairy Forms are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows Semantic Versioning (Major.Minor.Patch).
 
+## [1.1.0] - 2026-08-17
+
+### Added
+- Extension API for BlueFairy Forms Pro: `bffrm_submission_created` action, `bffrm_pre_submit` filter, `bffrm_notification_recipients` filter, `bffrm_before_render_form` filter, `bffrm_field_types` filter, `bffrm_validate_field` filter, `bffrm_error_message` filter.
+- `Renderer::get_supported_types()` static method exposing filterable list of supported field types.
+- Native `file` field type rendering (`<input type="file">`) with automatic `enctype="multipart/form-data"` on the form tag.
+
 ## [1.0.0] — 2026-08-17
 
 ### Added
