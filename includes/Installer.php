@@ -20,6 +20,7 @@ class Installer
         $this->maybe_seed_default_settings();
         $this->maybe_generate_ip_hmac_key();
         $this->maybe_seed_default_form();
+        update_option('bffrm_db_version', '2');
     }
 
     /**

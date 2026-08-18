@@ -24,4 +24,7 @@ if ($form_id < 1) {
     return;
 }
 
+// Enqueue form styles only when this block is actually rendered on the page.
+wp_enqueue_style('bffrm-form', BFFRM_URL . 'build/blocks/form/style.css', [], BFFRM_VERSION);
+
 echo \BlueFairy\Forms\Renderer::render_form($form_id);

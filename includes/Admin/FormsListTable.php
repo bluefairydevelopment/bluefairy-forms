@@ -34,6 +34,7 @@ class FormsListTable extends \WP_List_Table
         return [
             'id'         => __('ID', 'bluefairy-forms-lite'),
             'title'      => __('Title', 'bluefairy-forms-lite'),
+            'shortcode'  => __('Shortcode', 'bluefairy-forms-lite'),
             'slug'       => __('Slug', 'bluefairy-forms-lite'),
             'status'     => __('Status', 'bluefairy-forms-lite'),
             'created_at' => __('Created', 'bluefairy-forms-lite'),
@@ -49,26 +50,15 @@ class FormsListTable extends \WP_List_Table
         return [
             'id'         => ['id', true],
             'title'      => ['title', false],
+            'status'     => ['status', false],
             'created_at' => ['created_at', false],
         ];
     }
 
     public function prepare_items(): void
     {
-        $per_page = 50;
-        $page     = $this->get_pagenum();
-        $offset   = ($page - 1) * $per_page;
-
-        $this->items = $this->repo->all($per_page, $offset);
-        $total       = $this->repo->count();
-
-        $this->set_pagination_args([
-            'total_items' => $total,
-            'per_page'    => $per_page,
-            'total_pages' => (int) ceil($total / $per_page),
-        ]);
-
         $this->_column_headers = [$this->get_columns(), [], $this->get_sortable_columns()];
+        $this->items = $this->repo->all();
     }
 
     /**
@@ -97,6 +87,14 @@ class FormsListTable extends \WP_List_Table
         ]);
 
         return $title;
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     */
+    public function column_shortcode(mixed $item): string
+    {
+        return '<code>[bluefairy_form id="' . (int) ($item['id'] ?? 0) . '"]</code>';
     }
 
     /**

@@ -6,7 +6,11 @@
   "title": "BlueFairy Form",
   "category": "widgets",
   "description": "Embed a BlueFairy Form by ID.",
-  "keywords": ["form", "contact", "bluefairy"],
+  "keywords": [
+    "form",
+    "contact",
+    "bluefairy"
+  ],
   "textdomain": "bluefairy-forms",
   "attributes": {
     "formId": {
@@ -16,10 +20,12 @@
   },
   "render": "file:./render.php",
   "editorScript": "file:./index.js",
-  "style": "file:./style.css",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "spacing": {
       "margin": true,
       "padding": true

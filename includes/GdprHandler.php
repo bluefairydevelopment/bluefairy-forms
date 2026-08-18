@@ -16,7 +16,7 @@ class GdprHandler
      */
     public function register_exporter(array $exporters): array
     {
-        $exporters[] = [
+        $exporters['bffrm_submissions'] = [
             'exporter_friendly_name' => __('BlueFairy Forms Submissions', 'bluefairy-forms-lite'),
             'callback'               => [$this, 'export_user_data'],
         ];
@@ -31,7 +31,7 @@ class GdprHandler
      */
     public function register_eraser(array $erasers): array
     {
-        $erasers[] = [
+        $erasers['bffrm_submissions'] = [
             'eraser_friendly_name' => __('BlueFairy Forms Submissions', 'bluefairy-forms-lite'),
             'callback'             => [$this, 'erase_user_data'],
         ];

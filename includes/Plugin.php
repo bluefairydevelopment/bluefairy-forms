@@ -72,13 +72,15 @@ final class Plugin
                 return '';
             }
 
-            // Enqueue style for shortcode path (block.json handles it for block path).
-            wp_enqueue_style(
-                'bffrm-form',
-                BFFRM_URL . 'build/blocks/form/style.css',
-                [],
-                BFFRM_VERSION
-            );
+            // Skip style enqueue in non-page contexts (REST, AJAX, CLI).
+            if (! \wp_doing_ajax() && ! defined('WP_CLI') && ! (defined('REST_REQUEST') && REST_REQUEST)) {
+                \wp_enqueue_style(
+                    'bffrm-form',
+                    BFFRM_URL . 'build/blocks/form/style.css',
+                    [],
+                    BFFRM_VERSION
+                );
+            }
 
             return Renderer::render_form($formId);
         });
