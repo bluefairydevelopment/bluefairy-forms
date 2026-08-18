@@ -4,6 +4,11 @@ All notable changes to BlueFairy Forms are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows Semantic Versioning (Major.Minor.Patch).
 
+## [1.1.2] - 2026-08-18
+
+### Fixed
+- `FormsListTable` and `SubmissionsListTable`: `namespace` declaration appeared after the `ABSPATH` guard, violating PHP's rule that namespace must be the first statement (or after `declare`). Both files now declare namespace immediately after `declare(strict_types=1)`, with the ABSPATH guard moved below the `use` imports.
+
 ## [1.1.1] - 2026-08-18
 
 ### Fixed

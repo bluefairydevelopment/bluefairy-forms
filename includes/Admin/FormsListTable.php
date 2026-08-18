@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-if ( ! defined( 'ABSPATH' ) ) exit;
-
 namespace BlueFairy\Forms\Admin;
 
 use BlueFairy\Forms\FormRepository;
+
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 if (! class_exists('WP_List_Table')) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
