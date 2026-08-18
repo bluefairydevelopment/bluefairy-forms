@@ -2,9 +2,9 @@
 Contributors: bluefairydevelopment
 Tags: forms, contact form, form builder, spam protection, GDPR
 Requires at least: 6.4
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,14 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 
 == Changelog ==
 
+= 1.1.0 =
+* Add Shortcode column to the Forms list table so shortcodes are visible at a glance.
+* Fix GDPR personal data exporter/eraser to use named array keys, preventing conflicts with other plugins' exporters.
+* Fix style sheet enqueue guard — CSS is no longer enqueued during AJAX, REST, or WP-CLI requests.
+* Enqueue form stylesheet on the Gutenberg block render path (previously only enqueued on shortcode path).
+* Stamp `bffrm_db_version = 2` in options on plugin upgrade.
+* Fix `wp bluefairy-forms list-forms --format=ids` to return space-separated IDs correctly.
+
 = 1.0.0 =
 * Initial release.
 * Form definition storage with JSON config schema.
@@ -105,6 +113,9 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 * Multisite: per-site tables via wp_initialize_site.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Bug fix release. Deactivate and reactivate the plugin after updating to stamp the new DB version option.
 
 = 1.0.0 =
 Initial release. No upgrade steps required.
