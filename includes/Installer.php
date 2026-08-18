@@ -17,10 +17,11 @@ class Installer
     public function activate(): void
     {
         $this->install_tables();
+        $this->maybe_run_migrations();
         $this->maybe_seed_default_settings();
         $this->maybe_generate_ip_hmac_key();
         $this->maybe_seed_default_form();
-        update_option('bffrm_db_version', '2');
+        update_option('bffrm_db_version', '3');
     }
 
     /**
@@ -71,7 +72,7 @@ class Installer
   `submitted_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `email` varchar(191) DEFAULT NULL,
   `email_hash` char(64) DEFAULT NULL,
-  `ip_hash` char(64) NOT NULL,
+  `ip_hash` char(64) DEFAULT NULL,
   `user_agent_hash` char(64) DEFAULT NULL,
   `user_id` bigint(20) unsigned DEFAULT NULL,
   `status` varchar(20) NOT NULL DEFAULT 'new',
@@ -118,6 +119,23 @@ class Installer
 ) {$charset_collate};";
 
         dbDelta($sql_audit);
+    }
+
+    /**
+     * Run incremental DB migrations for already-active installs.
+     * dbDelta() can add columns but cannot change nullability, so we ALTER explicitly.
+     */
+    private function maybe_run_migrations(): void
+    {
+        global $wpdb;
+        $current = (int) get_option('bffrm_db_version', '1');
+
+        if ($current < 3) {
+            // v2 → v3: make ip_hash nullable to support GDPR erasure.
+            $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+                "ALTER TABLE `{$wpdb->prefix}bffrm_submissions` MODIFY COLUMN `ip_hash` char(64) DEFAULT NULL"
+            );
+        }
     }
 
     /**
