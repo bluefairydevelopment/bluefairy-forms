@@ -71,7 +71,7 @@ class Renderer
         if ($success) {
             $msg = ! empty($config['success_message'])
                 ? esc_html($config['success_message'])
-                : esc_html__('Thank you! Your message has been sent.', 'bluefairy-forms');
+                : esc_html__('Thank you! Your message has been sent.', 'bluefairy-forms-lite');
             return '<div class="bffrm-success" role="alert">' . $msg . '</div>';
         }
 
@@ -117,7 +117,7 @@ class Renderer
 
                 <div class="bffrm-field bffrm-submit">
                     <button type="submit" class="bffrm-btn-submit">
-                        <?php echo esc_html($config['submit_label'] ?? __('Send', 'bluefairy-forms')); ?>
+                        <?php echo esc_html($config['submit_label'] ?? __('Send', 'bluefairy-forms-lite')); ?>
                     </button>
                 </div>
             </form>
@@ -159,7 +159,7 @@ class Renderer
                 . '></textarea>';
         } elseif ($type === 'select') {
             echo '<select id="' . esc_attr($field_id) . '" name="' . esc_attr($id) . '"' . $req_attr . '>';
-            echo '<option value="">' . esc_html__('— Select —', 'bluefairy-forms') . '</option>';
+            echo '<option value="">' . esc_html__('— Select —', 'bluefairy-forms-lite') . '</option>';
             foreach ((array) ($field['options'] ?? []) as $opt) {
                 echo '<option value="' . esc_attr((string) $opt) . '">' . esc_html((string) $opt) . '</option>';
             }
@@ -209,19 +209,19 @@ class Renderer
     private static function error_message(string $error, string $field = ''): string
     {
         return match ($error) {
-            'nonce_fail'   => __('Security check failed. Please refresh the page and try again.', 'bluefairy-forms'),
-            'rate_limit'   => __('Too many submissions. Please wait a minute and try again.', 'bluefairy-forms'),
-            'spam'         => __('Your submission was flagged as spam. Please try again.', 'bluefairy-forms'),
+            'nonce_fail'   => __('Security check failed. Please refresh the page and try again.', 'bluefairy-forms-lite'),
+            'rate_limit'   => __('Too many submissions. Please wait a minute and try again.', 'bluefairy-forms-lite'),
+            'spam'         => __('Your submission was flagged as spam. Please try again.', 'bluefairy-forms-lite'),
             'validation'   => $field
                 ? sprintf(
                     /* translators: %s: field label */
-                    __('Please check the "%s" field and try again.', 'bluefairy-forms'),
+                    __('Please check the "%s" field and try again.', 'bluefairy-forms-lite'),
                     esc_html($field)
                 )
-                : __('Please check the form fields and try again.', 'bluefairy-forms'),
+                : __('Please check the form fields and try again.', 'bluefairy-forms-lite'),
             default => (string) apply_filters(
                 'bffrm_error_message',
-                __( 'An error occurred. Please try again.', 'bluefairy-forms' ),
+                __( 'An error occurred. Please try again.', 'bluefairy-forms-lite' ),
                 $error,
                 $field
             ),

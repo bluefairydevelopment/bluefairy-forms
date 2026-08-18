@@ -17,7 +17,7 @@ class GdprHandler
     public function register_exporter(array $exporters): array
     {
         $exporters[] = [
-            'exporter_friendly_name' => __('BlueFairy Forms Submissions', 'bluefairy-forms'),
+            'exporter_friendly_name' => __('BlueFairy Forms Submissions', 'bluefairy-forms-lite'),
             'callback'               => [$this, 'export_user_data'],
         ];
         return $exporters;
@@ -32,7 +32,7 @@ class GdprHandler
     public function register_eraser(array $erasers): array
     {
         $erasers[] = [
-            'eraser_friendly_name' => __('BlueFairy Forms Submissions', 'bluefairy-forms'),
+            'eraser_friendly_name' => __('BlueFairy Forms Submissions', 'bluefairy-forms-lite'),
             'callback'             => [$this, 'erase_user_data'],
         ];
         return $erasers;
@@ -74,20 +74,20 @@ class GdprHandler
 
             $export_items[] = [
                 'group_id'          => 'bffrm_submissions',
-                'group_label'       => __('BlueFairy Forms Submissions', 'bluefairy-forms'),
+                'group_label'       => __('BlueFairy Forms Submissions', 'bluefairy-forms-lite'),
                 'item_id'           => 'bffrm-submission-' . (int) $sub['id'],
                 'data'              => array_merge(
                     [
                         [
-                            'name'  => __('Form ID', 'bluefairy-forms'),
+                            'name'  => __('Form ID', 'bluefairy-forms-lite'),
                             'value' => (int) $sub['form_id'],
                         ],
                         [
-                            'name'  => __('Submitted At', 'bluefairy-forms'),
+                            'name'  => __('Submitted At', 'bluefairy-forms-lite'),
                             'value' => esc_html((string) $sub['submitted_at']),
                         ],
                         [
-                            'name'  => __('Email', 'bluefairy-forms'),
+                            'name'  => __('Email', 'bluefairy-forms-lite'),
                             'value' => esc_html((string) ($sub['email'] ?? '')),
                         ],
                     ],
@@ -126,7 +126,7 @@ class GdprHandler
             'messages'       => $removed > 0
                 ? [sprintf(
                     /* translators: %d: number of submissions erased */
-                    __('%d form submission(s) anonymised.', 'bluefairy-forms'),
+                    __('%d form submission(s) anonymised.', 'bluefairy-forms-lite'),
                     $removed
                 )]
                 : [],

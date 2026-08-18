@@ -72,7 +72,7 @@ class SubmissionHandler
         // Gather contextual data.
         // ------------------------------------------------------------------ //
         $ip    = $this->get_client_ip();
-        $email = isset($_POST['email']) ? sanitize_email((string) $_POST['email']) : '';
+        $email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( (string) $_POST['email'] ) ) : '';
 
         $hmac_key = $this->settings->get_ip_hmac_key();
         $ip_hash  = $hmac_key !== ''
@@ -149,8 +149,8 @@ class SubmissionHandler
             if ($field_id === '') {
                 continue;
             }
-            $raw   = isset($_POST[$field_id]) ? (string) $_POST[$field_id] : '';
-            $value = sanitize_textarea_field($raw);
+            $raw   = isset( $_POST[ $field_id ] ) ? wp_unslash( (string) $_POST[ $field_id ] ) : '';
+            $value = sanitize_textarea_field( $raw );
 
             if ($value !== '') {
                 $payload[$field_id] = $value;
@@ -201,14 +201,20 @@ class SubmissionHandler
         // Email notification (M6 — synchronous).
         // ------------------------------------------------------------------ //
         $mailer = new Mailer($this->settings);
+        // Make payload available to bffrm_notification_recipients filter consumers.
+        $GLOBALS['bffrmp_current_payload'] = $payload;
         $mailer->notify_admin($form, $payload, $submission_id);
+        unset( $GLOBALS['bffrmp_current_payload'] );
 
         // ------------------------------------------------------------------ //
         // Redirect to success URL.
         // ------------------------------------------------------------------ //
         $success_url = ! empty($config['redirect_url'])
-            ? esc_url_raw($config['redirect_url'])
-            : add_query_arg('bffrm_success', '1', $safe_referer);
+            ? wp_validate_redirect(
+                esc_url_raw( (string) $config['redirect_url'] ),
+                add_query_arg( 'bffrm_success', '1', $safe_referer )
+            )
+            : add_query_arg( 'bffrm_success', '1', $safe_referer );
 
         wp_safe_redirect($success_url);
         exit;

@@ -176,7 +176,7 @@ class SubmissionRepository
 
         $result = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "UPDATE `{$this->table}` SET `email` = NULL, `email_hash` = NULL, `payload_plaintext` = NULL, `consent_text_snapshot` = NULL, `status` = 'erased' WHERE `email_hash` = %s",
+                "UPDATE `{$this->table}` SET `email` = NULL, `email_hash` = NULL, `ip_hash` = NULL, `user_agent_hash` = NULL, `payload_plaintext` = NULL, `consent_text_snapshot` = NULL, `status` = 'erased' WHERE `email_hash` = %s",
                 $email_hash
             )
         );

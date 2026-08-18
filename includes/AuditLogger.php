@@ -41,7 +41,7 @@ class AuditLogger
         $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $this->table,
             [
-                'action'       => sanitize_key($action),
+                'action'       => sanitize_text_field( wp_unslash( $action ) ),
                 'actor_id'     => $actor_id,
                 'subject_type' => $subject_type ? sanitize_key($subject_type) : null,
                 'subject_id'   => $subject_id,

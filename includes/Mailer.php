@@ -37,19 +37,19 @@ class Mailer
 
         /* translators: %s: form title */
         $subject = sprintf(
-            __('[%s] New form submission: %s', 'bluefairy-forms'),
+            __('[%s] New form submission: %s', 'bluefairy-forms-lite'),
             get_bloginfo('name'),
             $form_title
         );
 
         $body  = sprintf(
             /* translators: 1: form title, 2: submission ID */
-            __("A new submission was received for form \"%1\$s\" (ID: #%2\$d).\n\n", 'bluefairy-forms'),
+            __("A new submission was received for form \"%1\$s\" (ID: #%2\$d).\n\n", 'bluefairy-forms-lite'),
             $form_title,
             $submission_id
         );
 
-        $body .= __("--- Submission Details ---\n", 'bluefairy-forms');
+        $body .= __("--- Submission Details ---\n", 'bluefairy-forms-lite');
 
         foreach ($payload as $key => $value) {
             $body .= sanitize_text_field($key) . ': ' . sanitize_text_field((string) $value) . "\n";
@@ -58,7 +58,7 @@ class Mailer
         $admin_url = admin_url('tools.php?page=bffrm-submissions&submission_id=' . $submission_id);
         $body     .= "\n" . sprintf(
             /* translators: %s: admin URL */
-            __("View in admin: %s\n", 'bluefairy-forms'),
+            __("View in admin: %s\n", 'bluefairy-forms-lite'),
             $admin_url
         );
 

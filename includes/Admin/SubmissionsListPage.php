@@ -14,7 +14,7 @@ class SubmissionsListPage
     public function render(): void
     {
         if (! current_user_can('manage_options')) {
-            wp_die(esc_html__('You do not have permission to access this page.', 'bluefairy-forms'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'bluefairy-forms-lite'));
         }
 
         $form_id = isset($_GET['form_id']) ? (int) $_GET['form_id'] : 0; // phpcs:ignore WordPress.Security.NonceVerification
@@ -31,7 +31,7 @@ class SubmissionsListPage
 
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Form Submissions', 'bluefairy-forms'); ?></h1>
+            <h1><?php esc_html_e('Form Submissions', 'bluefairy-forms-lite'); ?></h1>
 
             <?php if ($form_id > 0): ?>
                 <?php
@@ -43,11 +43,11 @@ class SubmissionsListPage
                     <?php
                     printf(
                         /* translators: %s: form title */
-                        esc_html__('Showing submissions for: %s', 'bluefairy-forms'),
+                        esc_html__('Showing submissions for: %s', 'bluefairy-forms-lite'),
                         '<strong>' . esc_html((string) $form['title']) . '</strong>'
                     );
                     ?>
-                    &nbsp; <a href="<?php echo esc_url(admin_url('tools.php?page=bffrm-submissions')); ?>"><?php esc_html_e('View all', 'bluefairy-forms'); ?></a>
+                    &nbsp; <a href="<?php echo esc_url(admin_url('tools.php?page=bffrm-submissions')); ?>"><?php esc_html_e('View all', 'bluefairy-forms-lite'); ?></a>
                 </p>
                 <?php endif; ?>
             <?php endif; ?>
@@ -63,7 +63,7 @@ class SubmissionsListPage
         $submission = $repo->find($submission_id);
 
         if (null === $submission) {
-            echo '<div class="wrap"><p>' . esc_html__('Submission not found.', 'bluefairy-forms') . '</p></div>';
+            echo '<div class="wrap"><p>' . esc_html__('Submission not found.', 'bluefairy-forms-lite') . '</p></div>';
             return;
         }
 
@@ -83,29 +83,29 @@ class SubmissionsListPage
                 <?php
                 printf(
                     /* translators: %d: submission ID */
-                    esc_html__('Submission #%d', 'bluefairy-forms'),
+                    esc_html__('Submission #%d', 'bluefairy-forms-lite'),
                     (int) $submission['id']
                 );
                 ?>
             </h1>
-            <p><a href="<?php echo esc_url($back_url); ?>">&larr; <?php esc_html_e('Back to submissions', 'bluefairy-forms'); ?></a></p>
+            <p><a href="<?php echo esc_url($back_url); ?>">&larr; <?php esc_html_e('Back to submissions', 'bluefairy-forms-lite'); ?></a></p>
 
             <table class="widefat striped">
                 <tbody>
                     <tr>
-                        <th><?php esc_html_e('Form ID', 'bluefairy-forms'); ?></th>
+                        <th><?php esc_html_e('Form ID', 'bluefairy-forms-lite'); ?></th>
                         <td><?php echo (int) $submission['form_id']; ?></td>
                     </tr>
                     <tr>
-                        <th><?php esc_html_e('Submitted At', 'bluefairy-forms'); ?></th>
+                        <th><?php esc_html_e('Submitted At', 'bluefairy-forms-lite'); ?></th>
                         <td><?php echo esc_html((string) $submission['submitted_at']); ?></td>
                     </tr>
                     <tr>
-                        <th><?php esc_html_e('Email', 'bluefairy-forms'); ?></th>
+                        <th><?php esc_html_e('Email', 'bluefairy-forms-lite'); ?></th>
                         <td><?php echo esc_html((string) ($submission['email'] ?? '—')); ?></td>
                     </tr>
                     <tr>
-                        <th><?php esc_html_e('Status', 'bluefairy-forms'); ?></th>
+                        <th><?php esc_html_e('Status', 'bluefairy-forms-lite'); ?></th>
                         <td><?php echo esc_html((string) ($submission['status'] ?? '')); ?></td>
                     </tr>
                     <?php foreach ($payload as $key => $val): ?>
@@ -116,11 +116,11 @@ class SubmissionsListPage
                     <?php endforeach; ?>
                     <?php if (! empty($submission['consent_text_snapshot'])): ?>
                     <tr>
-                        <th><?php esc_html_e('Consent Text', 'bluefairy-forms'); ?></th>
+                        <th><?php esc_html_e('Consent Text', 'bluefairy-forms-lite'); ?></th>
                         <td><?php echo esc_html((string) $submission['consent_text_snapshot']); ?></td>
                     </tr>
                     <tr>
-                        <th><?php esc_html_e('Consent Given At', 'bluefairy-forms'); ?></th>
+                        <th><?php esc_html_e('Consent Given At', 'bluefairy-forms-lite'); ?></th>
                         <td><?php echo esc_html((string) ($submission['consent_given_at'] ?? '—')); ?></td>
                     </tr>
                     <?php endif; ?>

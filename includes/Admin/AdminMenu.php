@@ -29,8 +29,8 @@ class AdminMenu
     {
         // Main entry under Tools.
         add_management_page(
-            __('BlueFairy Forms', 'bluefairy-forms'),
-            __('BlueFairy Forms', 'bluefairy-forms'),
+            __('BlueFairy Forms', 'bluefairy-forms-lite'),
+            __('BlueFairy Forms', 'bluefairy-forms-lite'),
             'manage_options',
             'bffrm-forms',
             [new FormsListPage(), 'render']
@@ -38,8 +38,8 @@ class AdminMenu
 
         add_submenu_page(
             'tools.php',
-            __('BlueFairy Forms — Submissions', 'bluefairy-forms'),
-            __('BF Forms — Submissions', 'bluefairy-forms'),
+            __('BlueFairy Forms — Submissions', 'bluefairy-forms-lite'),
+            __('BF Forms — Submissions', 'bluefairy-forms-lite'),
             'manage_options',
             'bffrm-submissions',
             [new SubmissionsListPage(), 'render']
@@ -47,8 +47,8 @@ class AdminMenu
 
         add_submenu_page(
             'tools.php',
-            __('BlueFairy Forms — Settings', 'bluefairy-forms'),
-            __('BF Forms — Settings', 'bluefairy-forms'),
+            __('BlueFairy Forms — Settings', 'bluefairy-forms-lite'),
+            __('BF Forms — Settings', 'bluefairy-forms-lite'),
             'manage_options',
             'bffrm-settings',
             [new SettingsPage($this->settings), 'render']
@@ -80,13 +80,13 @@ class AdminMenu
         ?>
         <div class="notice notice-warning is-dismissible bffrm-antispam-notice" data-dismiss-url="<?php echo esc_url($nonce_url); ?>">
             <p>
-                <strong><?php esc_html_e('Spam protection notice:', 'bluefairy-forms'); ?></strong>
+                <strong><?php esc_html_e('Spam protection notice:', 'bluefairy-forms-lite'); ?></strong>
                 <?php
                 printf(
                     /* translators: 1: opening link tag, 2: closing link tag */
                     esc_html__(
                         'BlueFairy Forms includes basic spam protection, but for much stronger coverage — including Stop Forum Spam lookup and a shared block log — install the free %1$sBlueFairy Anti-Spam%2$s plugin. No configuration needed; the two plugins detect and use each other automatically.',
-                        'bluefairy-forms'
+                        'bluefairy-forms-lite'
                     ),
                     '<a href="https://wordpress.org/plugins/bluefairy-antispam/" target="_blank" rel="noopener noreferrer">',
                     '</a>'

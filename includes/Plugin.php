@@ -49,7 +49,7 @@ final class Plugin
     private function load_textdomain(): void
     {
         load_plugin_textdomain(
-            'bluefairy-forms',
+            'bluefairy-forms-lite',
             false,
             dirname(plugin_basename(BFFRM_FILE)) . '/languages'
         );

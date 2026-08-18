@@ -65,14 +65,13 @@ class Validator
             }
 
             // Pattern check.
-            if (! empty($field['pattern'])) {
+            if ( ! empty( $field['pattern'] ) ) {
                 $pattern = (string) $field['pattern'];
-                // Wrap in delimiters for preg_match.
-                if (@preg_match('/' . $pattern . '/', $value) === false) {
-                    return ['valid' => false, 'error_field' => $id];
-                }
-                if (! preg_match('/' . $pattern . '/', $value)) {
-                    return ['valid' => false, 'error_field' => $id];
+                // If the admin stored an invalid regex, skip validation to avoid blocking all submissions.
+                if ( @preg_match( '/' . $pattern . '/', '' ) === false ) {
+                    // invalid regex — skip
+                } elseif ( ! preg_match( '/' . $pattern . '/', $value ) ) {
+                    return [ 'valid' => false, 'error_field' => $id ];
                 }
             }
 
