@@ -25,6 +25,22 @@ class Validator
             $required = (bool) ($field['required'] ?? false);
             $value    = isset($post_data[$id]) ? trim((string) $post_data[$id]) : '';
 
+            // File fields: POST value is always empty; check $_FILES instead.
+            if ($type === 'file') {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified by SubmissionHandler
+                $has_file = isset($_FILES[$id]) && (int) ($_FILES[$id]['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
+                if ($required && ! $has_file) {
+                    return ['valid' => false, 'error_field' => $id];
+                }
+                if ($has_file) {
+                    $custom_valid = apply_filters('bffrm_validate_field', true, $field, '', $config);
+                    if (true !== $custom_valid) {
+                        return ['valid' => false, 'error_field' => $id];
+                    }
+                }
+                continue;
+            }
+
             // Required check.
             if ($required && $value === '') {
                 return ['valid' => false, 'error_field' => $id];

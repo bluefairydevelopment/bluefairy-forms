@@ -4,6 +4,14 @@ All notable changes to BlueFairy Forms are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows Semantic Versioning (Major.Minor.Patch).
 
+## [1.1.4] - 2026-08-19
+
+### Fixed
+- `Validator`: `file` type fields were silently skipped during validation because `$_POST` values for file inputs are always empty. The validator now checks `$_FILES` directly, enforces `required` for file fields, and delegates MIME/size checks to the `bffrm_validate_field` filter used by Pro's `FileUploadHandler`.
+
+### Added
+- `Plugin`: `wp_ajax_bffrm_nonce` endpoint allows admin-authenticated callers to generate arbitrary WP nonces via AJAX.
+
 ## [1.1.2] - 2026-08-18
 
 ### Fixed

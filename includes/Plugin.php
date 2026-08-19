@@ -36,6 +36,7 @@ final class Plugin
         $this->register_block();
         $this->register_shortcode();
         $this->register_submission_handler();
+        $this->register_ajax_nonce();
         $this->register_gdpr_hooks();
         $this->register_multisite_hook();
         $this->register_cli();
@@ -98,6 +99,17 @@ final class Plugin
             switch_to_blog((int) $new_site->blog_id);
             ( new Installer() )->install_tables();
             restore_current_blog();
+        });
+    }
+
+    private function register_ajax_nonce(): void
+    {
+        add_action('wp_ajax_bffrm_nonce', function (): void {
+            if (! current_user_can('manage_options')) {
+                wp_die('', 403);
+            }
+            $action = sanitize_text_field(wp_unslash($_POST['nonce_action'] ?? ''));
+            wp_send_json_success(wp_create_nonce($action));
         });
     }
 
