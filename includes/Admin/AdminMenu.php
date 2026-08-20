@@ -23,6 +23,21 @@ class AdminMenu
         add_action('admin_menu', [$this, 'add_menu']);
         add_action('admin_notices', [$this, 'maybe_render_antispam_notice']);
         add_action('wp_ajax_bffrm_dismiss_notice', [$this, 'ajax_dismiss_notice']);
+        add_filter('plugin_action_links_' . plugin_basename(BFFRM_FILE), [$this, 'add_upgrade_link']);
+    }
+
+    /**
+     * @param string[] $links
+     * @return string[]
+     */
+    public function add_upgrade_link(array $links): array
+    {
+        array_unshift($links, sprintf(
+            '<a href="%s" target="_blank" rel="noopener noreferrer" style="font-weight:600;color:#1d4ed8;">%s</a>',
+            esc_url('https://wordpress.bluefairydevelopment.com/product/bluefairy-forms-pro/'),
+            esc_html__('Upgrade to Pro', 'bluefairy-forms-lite')
+        ));
+        return $links;
     }
 
     public function add_menu(): void

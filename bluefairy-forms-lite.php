@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Plugin Name:       BlueFairy Forms Lite
  * Plugin URI:        https://bluefairydevelopment.com/plugins/bluefairy-forms-lite/
  * Description:       Zero-asset-bloat WordPress forms plugin. Gutenberg block, shortcode, GDPR-safe submissions, spam protection, and admin submissions list — no jQuery, no bloat.
- * Version:           1.1.4
+ * Version:           1.1.5
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Blue Fairy Development
@@ -20,7 +20,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('BFFRM_VERSION', '1.1.4');
+define('BFFRM_VERSION', '1.1.5');
 define('BFFRM_FILE', __FILE__);
 define('BFFRM_DIR', plugin_dir_path(__FILE__));
 define('BFFRM_URL', plugin_dir_url(__FILE__));

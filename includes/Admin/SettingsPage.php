@@ -95,6 +95,20 @@ class SettingsPage
                 <?php submit_button(__('Save Settings', 'bluefairy-forms-lite')); ?>
             </form>
 
+            <div style="margin-top:2em;padding:1em 1.25em;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;max-width:700px;color:#1e3a5f;font-size:.9em;">
+                <?php
+                printf(
+                    /* translators: %s: upgrade link */
+                    esc_html__( '%s for multi-step forms, file uploads, conditional logic, payment integration, and more &rarr;', 'bluefairy-forms-lite' ),
+                    sprintf(
+                        '<a href="%s" target="_blank" rel="noopener noreferrer" style="font-weight:600;color:#1d4ed8;">%s</a>',
+                        esc_url( 'https://wordpress.bluefairydevelopment.com/product/bluefairy-forms-pro/' ),
+                        esc_html__( 'Upgrade to Forms Pro', 'bluefairy-forms-lite' )
+                    )
+                );
+                ?>
+            </div>
+
             <?php if (! function_exists('bfas_plugin')): ?>
             <div class="card" style="max-width:600px;margin-top:2em;padding:1em 2em;">
                 <h2><?php esc_html_e('Upgrade Spam Protection', 'bluefairy-forms-lite'); ?></h2>

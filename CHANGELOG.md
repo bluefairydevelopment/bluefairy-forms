@@ -4,6 +4,12 @@ All notable changes to BlueFairy Forms are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows Semantic Versioning (Major.Minor.Patch).
 
+## [1.1.5] - 2026-08-19
+
+### Added
+- Upgrade to Forms Pro banner on the Settings page.
+- "Upgrade to Pro" action link in the Plugins screen plugin row.
+
 ## [1.1.4] - 2026-08-19
 
 ### Fixed
