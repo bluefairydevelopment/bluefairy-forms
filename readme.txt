@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, spam protection, GDPR
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.6
+Stable tag: 1.1.7
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,11 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 
 == Changelog ==
 
+= 1.1.7 =
+* Fix: "Remove Data on Uninstall" left the `bffrm_db_version` option behind. The plugin creates three options and uninstall removed two of them, while the file's own documentation promised it removed all plugin data.
+* Fix: the Forms Pro notice on the settings page listed features Pro does not have. It now names only what Pro ships, and explains that Pro installs alongside this plugin rather than replacing it.
+* The Pro notice and the plugins-list link now hide themselves when Forms Pro is already installed.
+
 = 1.1.6 =
 * Renamed from BlueFairy Forms Lite to BlueFairy Forms (slug bluefairy-forms). The paid add-on is now BlueFairy Forms Pro. Nothing is called "Lite" any more.
 * Fix: database schema changes now run when the plugin is updated, not only when it is activated. WordPress does not fire the activation hook on update, so new indexes and columns reached fresh installs and silently skipped every existing site.
@@ -124,6 +129,10 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 * Multisite: per-site tables via wp_initialize_site.
 
 == Upgrade Notice ==
+
+= 1.1.7 =
+If you use "Remove Data on Uninstall", this release makes it complete — the bffrm_db_version option was previously left behind.
+
 
 = 1.1.6 =
 The plugin is now BlueFairy Forms, not BlueFairy Forms Lite. Schema updates now apply on update as well as activation, so no deactivate/reactivate step is needed this time.

@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.1.7] — 2026-08-30
+
+### Fixed
+- "Remove Data on Uninstall" left `bffrm_db_version` in the options table. The
+  plugin creates three options and `uninstall.php` deleted two, while its own
+  docblock promised it removed all plugin data. Caught by T-14-7 the first time
+  that test was ever allowed to run — all seven uninstall tests had been skipped
+  as "not reversible in an automated run", which stopped being true once the rig
+  began restoring from a baseline dump.
+- The Forms Pro notice on the settings page advertised "multi-step forms, file
+  uploads, conditional logic, payment integration". Only file uploads exists;
+  the other three appear nowhere in bluefairy-forms-pro. It now names only
+  shipped features and states that Pro runs alongside this plugin.
+
+### Changed
+- The Pro notice and the plugins-list link are hidden when Forms Pro is already
+  active, rather than offering it to people who have it.
+- `docs/FEATURES.md` separates shipped Pro features from planned ones. Five
+  items under "planned" had already shipped, which is where the false settings
+  page claims came from.
+
 ## [1.1.6] — 2026-08-30
 
 ### Changed
