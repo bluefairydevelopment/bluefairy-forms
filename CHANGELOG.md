@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.8] — 2026-08-30
+
+### Added
+- `bffrm_submissions_page_actions` action, fired above the submissions table so
+  add-ons can render controls on that screen. Forms Pro's CSV export had a
+  working `admin_post` handler and documentation telling the customer to click
+  "Export CSV", but no way to put a button anywhere in the admin. The feature
+  was reachable only from WP-CLI or a hand-built URL.
+
 ## [1.1.7] — 2026-08-30
 
 ### Fixed

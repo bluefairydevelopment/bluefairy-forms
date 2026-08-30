@@ -52,6 +52,23 @@ class SubmissionsListPage
                 <?php endif; ?>
             <?php endif; ?>
 
+            <?php
+            /**
+             * Render extra controls above the submissions table.
+             *
+             * Add-ons have no other way onto this screen. Forms Pro registered
+             * an admin_post handler for CSV export and documented "click Export
+             * CSV", but nothing rendered a control for it — the feature was
+             * reachable only from WP-CLI or a hand-built URL. The E2E test that
+             * was meant to catch this searched the whole page for a link
+             * matching /export/i and matched WordPress's own Tools > Export
+             * menu item, so it passed for as long as the button was missing.
+             *
+             * @param int $form_id Form being filtered on, or 0 for all forms.
+             */
+            do_action('bffrm_submissions_page_actions', $form_id);
+            ?>
+
             <?php $table->display(); ?>
         </div>
         <?php

@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, spam protection, GDPR
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,9 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 5. A rendered contact form on the front end.
 
 == Changelog ==
+
+= 1.1.8 =
+* New: an extension point above the submissions table, so BlueFairy Forms Pro can add its "Export CSV" button there. Pro's CSV export previously had nowhere in the admin to be triggered from.
 
 = 1.1.7 =
 * Fix: "Remove Data on Uninstall" left the `bffrm_db_version` option behind. The plugin creates three options and uninstall removed two of them, while the file's own documentation promised it removed all plugin data.
