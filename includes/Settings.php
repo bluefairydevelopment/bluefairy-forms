@@ -20,6 +20,11 @@ class Settings
         'debug_log'               => false,
         'remove_data_on_uninstall' => false,
         'honeypot_enabled'        => true,
+        // Days to keep audit-log rows. 0 disables pruning. The table previously
+        // had no retention of any kind: one row per submission plus up to two
+        // per webhook delivery attempt, growing without bound for the life of
+        // the install, with TRUNCATE the only way to shrink it.
+        'audit_retention_days'    => 90,
     ];
 
     public function __construct()

@@ -14,7 +14,7 @@ class FormsListPage
     public function render(): void
     {
         if (! current_user_can('manage_options')) {
-            wp_die(esc_html__('You do not have permission to access this page.', 'bluefairy-forms-lite'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'bluefairy-forms'));
         }
 
         $repo  = new FormRepository();
@@ -26,9 +26,9 @@ class FormsListPage
 
         ?>
         <div class="wrap">
-            <h1 class="wp-heading-inline"><?php esc_html_e('BlueFairy Forms', 'bluefairy-forms-lite'); ?></h1>
+            <h1 class="wp-heading-inline"><?php esc_html_e('BlueFairy Forms', 'bluefairy-forms'); ?></h1>
             <a href="<?php echo esc_url(admin_url('tools.php?page=bffrm-forms&bffrm_action=new')); ?>" class="page-title-action">
-                <?php esc_html_e('Add New', 'bluefairy-forms-lite'); ?>
+                <?php esc_html_e('Add New', 'bluefairy-forms'); ?>
             </a>
             <hr class="wp-header-end">
 
@@ -52,9 +52,9 @@ class FormsListPage
         if (! empty($_GET['bffrm_msg'])) { // phpcs:ignore WordPress.Security.NonceVerification
             $msg = sanitize_key((string) $_GET['bffrm_msg']); // phpcs:ignore WordPress.Security.NonceVerification
             $messages = [
-                'created' => __('Form created.', 'bluefairy-forms-lite'),
-                'updated' => __('Form updated.', 'bluefairy-forms-lite'),
-                'deleted' => __('Form deleted.', 'bluefairy-forms-lite'),
+                'created' => __('Form created.', 'bluefairy-forms'),
+                'updated' => __('Form updated.', 'bluefairy-forms'),
+                'deleted' => __('Form deleted.', 'bluefairy-forms'),
             ];
             if (isset($messages[$msg])) {
                 echo '<div class="notice notice-success is-dismissible"><p>' . esc_html($messages[$msg]) . '</p></div>';
@@ -85,7 +85,7 @@ class FormsListPage
                     wp_safe_redirect(admin_url('tools.php?page=bffrm-forms&bffrm_msg=created'));
                     exit;
                 } else {
-                    echo '<div class="notice notice-error"><p>' . esc_html__('Invalid JSON in config.', 'bluefairy-forms-lite') . '</p></div>';
+                    echo '<div class="notice notice-error"><p>' . esc_html__('Invalid JSON in config.', 'bluefairy-forms') . '</p></div>';
                 }
             }
         }
@@ -101,7 +101,7 @@ class FormsListPage
         $form = $repo->find($form_id);
 
         if (null === $form) {
-            echo '<div class="notice notice-error"><p>' . esc_html__('Form not found.', 'bluefairy-forms-lite') . '</p></div>';
+            echo '<div class="notice notice-error"><p>' . esc_html__('Form not found.', 'bluefairy-forms') . '</p></div>';
             return;
         }
 
@@ -118,7 +118,7 @@ class FormsListPage
                 wp_safe_redirect(admin_url('tools.php?page=bffrm-forms&bffrm_msg=updated'));
                 exit;
             } else {
-                echo '<div class="notice notice-error"><p>' . esc_html__('Invalid JSON in config.', 'bluefairy-forms-lite') . '</p></div>';
+                echo '<div class="notice notice-error"><p>' . esc_html__('Invalid JSON in config.', 'bluefairy-forms') . '</p></div>';
             }
         }
 
@@ -159,32 +159,32 @@ class FormsListPage
         wp_enqueue_style('wp-codemirror');
 
         ?>
-        <h2><?php echo $title ? esc_html__('Edit Form', 'bluefairy-forms-lite') : esc_html__('New Form', 'bluefairy-forms-lite'); ?></h2>
+        <h2><?php echo $title ? esc_html__('Edit Form', 'bluefairy-forms') : esc_html__('New Form', 'bluefairy-forms'); ?></h2>
         <form method="post" action="">
             <?php wp_nonce_field('bffrm_save_form'); ?>
             <input type="hidden" name="bffrm_save_form" value="1">
 
             <table class="form-table">
                 <tr>
-                    <th><label for="bffrm_title"><?php esc_html_e('Title', 'bluefairy-forms-lite'); ?></label></th>
+                    <th><label for="bffrm_title"><?php esc_html_e('Title', 'bluefairy-forms'); ?></label></th>
                     <td><input type="text" id="bffrm_title" name="bffrm_title" value="<?php echo esc_attr((string) ($title ?? '')); ?>" class="regular-text" required></td>
                 </tr>
                 <?php if (! $title): // slug only on create ?>
                 <tr>
-                    <th><label for="bffrm_slug"><?php esc_html_e('Slug', 'bluefairy-forms-lite'); ?></label></th>
+                    <th><label for="bffrm_slug"><?php esc_html_e('Slug', 'bluefairy-forms'); ?></label></th>
                     <td><input type="text" id="bffrm_slug" name="bffrm_slug" value="<?php echo esc_attr((string) ($slug ?? '')); ?>" class="regular-text" required pattern="[a-z0-9\-]+"></td>
                 </tr>
                 <?php endif; ?>
                 <tr>
-                    <th><label for="bffrm_config"><?php esc_html_e('Form Config (JSON)', 'bluefairy-forms-lite'); ?></label></th>
+                    <th><label for="bffrm_config"><?php esc_html_e('Form Config (JSON)', 'bluefairy-forms'); ?></label></th>
                     <td>
                         <textarea id="bffrm_config" name="bffrm_config" rows="30" class="large-text code"><?php echo esc_textarea($config_pretty); ?></textarea>
-                        <p class="description"><?php esc_html_e('Edit the form configuration as JSON. Fields: id, type, label, required, placeholder, pattern, minlength, maxlength, options.', 'bluefairy-forms-lite'); ?></p>
+                        <p class="description"><?php esc_html_e('Edit the form configuration as JSON. Fields: id, type, label, required, placeholder, pattern, minlength, maxlength, options.', 'bluefairy-forms'); ?></p>
                     </td>
                 </tr>
             </table>
 
-            <?php submit_button($title ? __('Update Form', 'bluefairy-forms-lite') : __('Create Form', 'bluefairy-forms-lite')); ?>
+            <?php submit_button($title ? __('Update Form', 'bluefairy-forms') : __('Create Form', 'bluefairy-forms')); ?>
         </form>
 
         <?php if (! empty($cm_settings)): ?>
@@ -211,7 +211,7 @@ class FormsListPage
         }
 
         if (! wp_verify_nonce( sanitize_text_field( wp_unslash( (string) $_GET['_wpnonce'] ) ), 'bffrm_delete_form')) {
-            wp_die(esc_html__('Security check failed.', 'bluefairy-forms-lite'));
+            wp_die(esc_html__('Security check failed.', 'bluefairy-forms'));
         }
 
         $form_id = (int) $_GET['form_id'];

@@ -169,6 +169,25 @@ class SubmissionHandler
         // ------------------------------------------------------------------ //
         $sub_repo = new SubmissionRepository();
 
+        /**
+         * Filter the payload immediately before it is persisted.
+         *
+         * Exists so add-ons can attach data they collected during validation —
+         * Pro's file uploads are the motivating case. Before this filter, Pro
+         * moved uploaded files to disk and recorded their metadata in
+         * $GLOBALS['bffrmp_uploaded_files'], which nothing ever read: the file
+         * was stored, the submission never referenced it, and there was no route
+         * to retrieve it. Uploads accumulated on disk, orphaned.
+         *
+         * Passing data through a filter rather than a superglobal also removes
+         * the ordering dependency that made that bug possible.
+         *
+         * @param array $payload      Sanitised field values, keyed by field id.
+         * @param int   $form_id      Form being submitted.
+         * @param array $form         Form row.
+         */
+        $payload = (array) apply_filters( 'bffrm_submission_payload', $payload, $form_id, $form );
+
         $submission_id = $sub_repo->insert([
             'form_id'               => $form_id,
             'email'                 => $email ?: null,
@@ -201,7 +220,10 @@ class SubmissionHandler
         // Email notification (M6 — synchronous).
         // ------------------------------------------------------------------ //
         $mailer = new Mailer($this->settings);
-        // Make payload available to bffrm_notification_recipients filter consumers.
+        // The payload is passed to notify_admin() directly. The superglobal is
+        // retained ONLY so an add-on written against the old contract keeps
+        // working; new code should read the $payload argument on the
+        // bffrm_notification_recipients filter instead.
         $GLOBALS['bffrmp_current_payload'] = $payload;
         $mailer->notify_admin($form, $payload, $submission_id);
         unset( $GLOBALS['bffrmp_current_payload'] );

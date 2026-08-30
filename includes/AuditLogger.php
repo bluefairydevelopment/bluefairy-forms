@@ -50,4 +50,37 @@ class AuditLogger
             ['%s', '%d', '%s', '%d', '%s']
         );
     }
+
+    /**
+     * Delete audit rows older than the configured retention window.
+     *
+     * Runs on the bffrm_prune_audit_log cron event. Batched so a first run
+     * against a large backlog cannot hold a long lock or exhaust memory; the
+     * event fires daily, so a backlog drains over successive runs rather than
+     * in one transaction.
+     *
+     * Relies on idx_created_at, added in schema revision 4. Without that index
+     * this is a full table scan of the very table it exists to keep small.
+     *
+     * @return int Rows deleted.
+     */
+    public function prune(): int
+    {
+        global $wpdb;
+
+        $settings = new Settings();
+        $days     = (int) $settings->get('audit_retention_days', 90);
+
+        if ($days <= 0) {
+            return 0;   // Retention disabled.
+        }
+
+        return (int) $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $wpdb->prepare(
+                "DELETE FROM `{$this->table}` WHERE `created_at` < DATE_SUB(UTC_TIMESTAMP(), INTERVAL %d DAY) LIMIT 1000",
+                $days
+            )
+        );
+    }
+
 }

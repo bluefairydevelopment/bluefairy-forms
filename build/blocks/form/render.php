@@ -19,7 +19,7 @@ $bffrm_form_id = isset($attributes['formId']) ? (int) $attributes['formId'] : 0;
 
 if ($bffrm_form_id < 1) {
     if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST)) {
-        echo '<p class="bffrm-placeholder">' . esc_html__('BlueFairy Form: select a form ID in the block settings panel.', 'bluefairy-forms-lite') . '</p>';
+        echo '<p class="bffrm-placeholder">' . esc_html__('BlueFairy Form: select a form ID in the block settings panel.', 'bluefairy-forms') . '</p>';
     }
     return;
 }

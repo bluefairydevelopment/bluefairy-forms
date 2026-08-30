@@ -34,13 +34,13 @@ class FormsListTable extends \WP_List_Table
     public function get_columns(): array
     {
         return [
-            'id'         => __('ID', 'bluefairy-forms-lite'),
-            'title'      => __('Title', 'bluefairy-forms-lite'),
-            'shortcode'  => __('Shortcode', 'bluefairy-forms-lite'),
-            'slug'       => __('Slug', 'bluefairy-forms-lite'),
-            'status'     => __('Status', 'bluefairy-forms-lite'),
-            'created_at' => __('Created', 'bluefairy-forms-lite'),
-            'actions'    => __('Actions', 'bluefairy-forms-lite'),
+            'id'         => __('ID', 'bluefairy-forms'),
+            'title'      => __('Title', 'bluefairy-forms'),
+            'shortcode'  => __('Shortcode', 'bluefairy-forms'),
+            'slug'       => __('Slug', 'bluefairy-forms'),
+            'status'     => __('Status', 'bluefairy-forms'),
+            'created_at' => __('Created', 'bluefairy-forms'),
+            'actions'    => __('Actions', 'bluefairy-forms'),
         ];
     }
 
@@ -84,8 +84,8 @@ class FormsListTable extends \WP_List_Table
 
         $title  = '<strong><a href="' . esc_url($edit_url) . '">' . esc_html((string) $item['title']) . '</a></strong>';
         $title .= $this->row_actions([
-            'edit'   => '<a href="' . esc_url($edit_url) . '">' . esc_html__('Edit', 'bluefairy-forms-lite') . '</a>',
-            'delete' => '<a href="' . esc_url($delete_url) . '" class="submitdelete" onclick="return confirm(\'' . esc_js(__('Delete this form?', 'bluefairy-forms-lite')) . '\')">' . esc_html__('Delete', 'bluefairy-forms-lite') . '</a>',
+            'edit'   => '<a href="' . esc_url($edit_url) . '">' . esc_html__('Edit', 'bluefairy-forms') . '</a>',
+            'delete' => '<a href="' . esc_url($delete_url) . '" class="submitdelete" onclick="return confirm(\'' . esc_js(__('Delete this form?', 'bluefairy-forms')) . '\')">' . esc_html__('Delete', 'bluefairy-forms') . '</a>',
         ]);
 
         return $title;
@@ -105,7 +105,7 @@ class FormsListTable extends \WP_List_Table
     public function column_actions(mixed $item): string
     {
         $sub_url = admin_url('tools.php?page=bffrm-submissions&form_id=' . (int) $item['id']);
-        return '<a href="' . esc_url($sub_url) . '">' . esc_html__('View Submissions', 'bluefairy-forms-lite') . '</a>';
+        return '<a href="' . esc_url($sub_url) . '">' . esc_html__('View Submissions', 'bluefairy-forms') . '</a>';
     }
 
     /**

@@ -21,7 +21,8 @@ class Installer
         $this->maybe_seed_default_settings();
         $this->maybe_generate_ip_hmac_key();
         $this->maybe_seed_default_form();
-        update_option('bffrm_db_version', '3');
+        $this->schedule_events();
+        update_option('bffrm_db_version', BFFRM_DB_VERSION);
     }
 
     /**
@@ -29,6 +30,7 @@ class Installer
      */
     public function deactivate(): void
     {
+        wp_clear_scheduled_hook('bffrm_prune_audit_log');
         // Nothing to unschedule — no cron events registered by this plugin (Lite).
     }
 
@@ -97,7 +99,8 @@ class Installer
   `window_key` varchar(20) NOT NULL,
   `count` int(10) unsigned NOT NULL DEFAULT 0,
   `expires_at` datetime(6) NOT NULL,
-  PRIMARY KEY  (ip_hash,form_id,window_key)
+  PRIMARY KEY  (ip_hash,form_id,window_key),
+  KEY idx_expires (expires_at)
 ) {$charset_collate};";
 
         dbDelta($sql_rate);
@@ -115,7 +118,8 @@ class Installer
   `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY  (id),
   KEY idx_subject (subject_type,subject_id),
-  KEY idx_actor (actor_id)
+  KEY idx_actor (actor_id),
+  KEY idx_created_at (created_at)
 ) {$charset_collate};";
 
         dbDelta($sql_audit);
@@ -214,4 +218,18 @@ class Installer
             ['%s', '%s', '%s', '%s']
         );
     }
+
+    /**
+     * Register recurring maintenance events.
+     *
+     * Idempotent: wp_next_scheduled() guards against duplicate registration when
+     * activate() runs again, which it now does after every plugin update.
+     */
+    private function schedule_events(): void
+    {
+        if (! wp_next_scheduled('bffrm_prune_audit_log')) {
+            wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', 'bffrm_prune_audit_log');
+        }
+    }
+
 }
