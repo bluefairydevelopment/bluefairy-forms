@@ -3,7 +3,32 @@
 ## [1.1.6] — 2026-08-30
 
 ### Changed
+- Renamed from BlueFairy Forms Lite to BlueFairy Forms (slug `bluefairy-forms`).
+  The paid add-on is now BlueFairy Forms Pro. Nothing is called "Lite" any more.
 - Compatibility: tested against WordPress 7.1.
+
+### Fixed
+- Database schema changes now run on plugin UPDATE, not only on activation.
+  WordPress does not fire `register_activation_hook` on update, so new indexes
+  and columns reached fresh installs and silently skipped every existing site.
+  Guarded by `BFFRM_DB_VERSION` plus an `admin_init` check.
+- Personal-data erasure could fail because `ip_hash` was not nullable. The
+  column now accepts NULL, with a migration for existing installs.
+- File-field validation, and a nonce-checked admin AJAX endpoint.
+
+### Added
+- `bffrm_submission_payload` filter, so add-ons can extend a submission payload
+  before it is stored.
+- Audit log retention: `idx_created_at`, an `audit_retention_days` setting and a
+  daily prune. The callback is bound outside `is_admin()` — WP-Cron requests are
+  not admin requests.
+- An upgrade notice for BlueFairy Forms Pro on the settings page and in the
+  plugins list row.
+
+### Performance
+- Indexes on the rate-limit expiry and audit-log timestamp columns.
+- The submissions-by-date query rewritten from `DATE(submitted_at)` to a range,
+  so it can use its index instead of scanning the table.
 
 All notable changes to BlueFairy Forms are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
