@@ -41,15 +41,34 @@
 - **M10** — `$wpdb->prefix` used throughout; `wp_initialize_site` hook for multisite.
 - **M12** — `editorScript: "file:./index.js"` in block.json; no `enqueue_block_editor_assets`.
 
+## Available in BlueFairy Forms Pro
+
+Shipped in bluefairy-forms-pro 1.0.4. Pro is an add-on: it runs alongside this
+plugin and needs it to stay active.
+
+- **F1** — Streamed CSV export, protected against formula injection
+- **F2** — HTML confirmation email with `{{fieldid}}` placeholders in the body
+- **F3** — Webhooks with HMAC-SHA256 signature and exponential-backoff retry
+- **F4** — Dashboard widget with submission stats
+- **F5** — Form scheduling (open/close dates)
+- **F6** — Submission limits per form
+- **F7** — Custom From name and address, with header-injection protection
+- **F8** — Multiple recipients, with conditional CC routing (`notify_if`)
+- **F9** — Encryption at rest (libsodium XSalsa20-Poly1305), with key rotation
+- **F10** — File uploads with MIME validation and a private upload directory
+- **F12** — CAPTCHA: reCAPTCHA v3, hCaptcha, Cloudflare Turnstile
+
 ## Pro (planned)
 
-- Encryption at rest for payload_plaintext
-- File uploads
-- Conditional logic
+Genuinely unbuilt. Half of the previous list under this heading had already
+shipped, which made the heading useless for telling the two apart — and three
+of these were being advertised on the settings page as though they existed.
+
+- Conditional logic at the FIELD level — show/hide fields on another field's
+  value. Note the notification side of this already ships as `notify_if`, so
+  the config vocabulary exists.
 - Multi-step forms
-- Webhooks
 - Email integrations (Mailchimp, etc.)
-- REST API endpoint
-- CAPTCHA support
-- CSV export
+- REST API endpoint — no `register_rest_route` call exists today
 - Drag-and-drop React form builder
+- Payment integration
