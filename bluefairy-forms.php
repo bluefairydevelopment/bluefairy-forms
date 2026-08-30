@@ -5,7 +5,8 @@ declare(strict_types=1);
  * Plugin Name:       BlueFairy Forms
  * Plugin URI:        https://bluefairydevelopment.com/plugins/bluefairy-forms/
  * Description:       Zero-asset-bloat WordPress forms plugin. Gutenberg block, shortcode, GDPR-safe submissions, spam protection, and admin submissions list — no jQuery, no bloat.
- * Version:           1.1.5
+ * Version:           1.1.6
+
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Blue Fairy Development
@@ -20,7 +21,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('BFFRM_VERSION', '1.1.5');
+define('BFFRM_VERSION', '1.1.6');
 
 // Schema revision. Bump when install_tables() or the migrations change; the
 // upgrade check below re-runs the installer whenever the stored value is behind.
@@ -41,7 +42,7 @@ spl_autoload_register(static function (string $class): void {
 });
 
 /**
- * Global helper — allows Pro and third-party code to detect Lite without class_exists().
+ * Global helper — allows Pro and third-party code to detect the free plugin without class_exists().
  */
 function bffrm_plugin(): BlueFairy\Forms\Plugin
 {

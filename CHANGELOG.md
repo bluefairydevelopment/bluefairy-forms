@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.6] — 2026-08-30
+
+### Changed
+- Compatibility: tested against WordPress 7.1.
+
 All notable changes to BlueFairy Forms are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Versioning follows Semantic Versioning (Major.Minor.Patch).
