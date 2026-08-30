@@ -29,4 +29,8 @@ foreach ($bffrm_tables as $bffrm_table) {
 // Remove options.
 delete_option('bffrm_settings');
 delete_option('bffrm_ip_hmac_key');
-delete_option('bffrm_antispam_notice_dismissed');
+// A TRANSIENT, not an option — AdminMenu sets it with set_transient(), so it
+// lives under _transient_bffrm_antispam_notice_dismissed and the matching
+// _transient_timeout_ row. delete_option() on the bare key matched nothing, so
+// both rows survived a "Remove Data on Uninstall" run that promised otherwise.
+delete_transient('bffrm_antispam_notice_dismissed');

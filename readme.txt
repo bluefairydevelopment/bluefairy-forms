@@ -1,10 +1,10 @@
-=== BlueFairy Forms Lite ===
+=== BlueFairy Forms ===
 Contributors: bluefairydevelopment
 Tags: forms, contact form, form builder, spam protection, GDPR
 Requires at least: 6.4
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.4
+Stable tag: 1.1.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,7 +70,7 @@ Yes. Tables are created per-site automatically when a new site is added to the n
 
 = Can I export submissions to CSV? =
 
-Not in the Lite version. CSV export is available in BlueFairy Forms Pro.
+Not in the free plugin. CSV export is available in BlueFairy Forms Pro.
 
 = How does the rate limiter work? =
 
@@ -85,6 +85,17 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 5. A rendered contact form on the front end.
 
 == Changelog ==
+
+= 1.1.6 =
+* Renamed from BlueFairy Forms Lite to BlueFairy Forms (slug bluefairy-forms). The paid add-on is now BlueFairy Forms Pro. Nothing is called "Lite" any more.
+* Fix: database schema changes now run when the plugin is updated, not only when it is activated. WordPress does not fire the activation hook on update, so new indexes and columns reached fresh installs and silently skipped every existing site.
+* Fix: personal-data erasure could fail because ip_hash was not nullable. The column now accepts NULL, and a migration updates existing installs.
+* Fix: file-field validation, plus a nonce-checked admin AJAX endpoint.
+* Performance: indexes added on the rate-limit expiry and audit-log timestamp columns, and the submissions-by-date query rewritten as a range so it can use its index instead of scanning the table.
+* New: audit log retention. Entries older than the configured number of days (90 by default) are removed by a daily scheduled task.
+* New: `bffrm_submission_payload` filter, so add-ons can extend a submission payload before it is stored.
+* Add: an upgrade notice for BlueFairy Forms Pro on the settings page and in the plugins list row.
+* Compatibility: tested against WordPress 7.1.
 
 = 1.1.0 =
 * Add Shortcode column to the Forms list table so shortcodes are visible at a glance.
@@ -113,6 +124,9 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 * Multisite: per-site tables via wp_initialize_site.
 
 == Upgrade Notice ==
+
+= 1.1.6 =
+The plugin is now BlueFairy Forms, not BlueFairy Forms Lite. Schema updates now apply on update as well as activation, so no deactivate/reactivate step is needed this time.
 
 = 1.1.0 =
 Bug fix release. Deactivate and reactivate the plugin after updating to stamp the new DB version option.

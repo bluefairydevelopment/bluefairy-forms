@@ -71,6 +71,13 @@ class SubmissionRepository
      *
      * @param int $form_id  0 = all forms.
      * @return array<int, array<string, mixed>>
+          *
+     * Selects only the columns the admin list renders. It previously used
+     * SELECT s.*, which pulled payload_plaintext (mediumtext),
+     * consent_text_snapshot (longtext) and — once Pro is active —
+     * payload_encrypted (mediumblob) for all 50 rows on every page load,
+     * none of which are displayed. This method has exactly one caller
+     * (SubmissionsListTable::prepare_items), so narrowing it is safe.
      */
     public function recent(int $limit = 200, int $offset = 0, int $form_id = 0): array
     {
@@ -79,7 +86,7 @@ class SubmissionRepository
         if ($form_id > 0) {
             $rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
                 $wpdb->prepare(
-                    "SELECT s.*, f.title AS form_title FROM `{$this->table}` s LEFT JOIN `{$wpdb->prefix}bffrm_forms` f ON f.id = s.form_id WHERE s.form_id = %d ORDER BY s.submitted_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                    "SELECT s.`id`, s.`form_id`, s.`email`, s.`status`, s.`submitted_at`, f.title AS form_title FROM `{$this->table}` s LEFT JOIN `{$wpdb->prefix}bffrm_forms` f ON f.id = s.form_id WHERE s.form_id = %d ORDER BY s.submitted_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     $form_id,
                     $limit,
                     $offset
@@ -89,7 +96,7 @@ class SubmissionRepository
         } else {
             $rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
                 $wpdb->prepare(
-                    "SELECT s.*, f.title AS form_title FROM `{$this->table}` s LEFT JOIN `{$wpdb->prefix}bffrm_forms` f ON f.id = s.form_id ORDER BY s.submitted_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                    "SELECT s.`id`, s.`form_id`, s.`email`, s.`status`, s.`submitted_at`, f.title AS form_title FROM `{$this->table}` s LEFT JOIN `{$wpdb->prefix}bffrm_forms` f ON f.id = s.form_id ORDER BY s.submitted_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     $limit,
                     $offset
                 ),

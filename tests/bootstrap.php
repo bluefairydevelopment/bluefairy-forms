@@ -6,7 +6,7 @@ declare(strict_types=1);
  *
  * Only functions exercised by the unit-test suite are defined here.
  * Integration and E2E coverage lives in the Playwright suite at
- * ~/Sites/blueSites/tests/wordpress/forms-lite/.
+ * ~/Sites/wp-testkit/suites/forms/ (the rig that certifies this plugin).
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';

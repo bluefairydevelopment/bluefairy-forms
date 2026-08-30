@@ -28,10 +28,10 @@
 				null,
 				el(
 					PanelBody,
-					{ title: __( 'Form Settings', 'bluefairy-forms-lite' ), initialOpen: true },
+					{ title: __( 'Form Settings', 'bluefairy-forms' ), initialOpen: true },
 					el( TextControl, {
-						label: __( 'Form ID', 'bluefairy-forms-lite' ),
-						help: __( 'Enter the numeric ID of the BlueFairy Form to embed. Find IDs at Tools → BlueFairy Forms.', 'bluefairy-forms-lite' ),
+						label: __( 'Form ID', 'bluefairy-forms' ),
+						help: __( 'Enter the numeric ID of the BlueFairy Form to embed. Find IDs at Tools → BlueFairy Forms.', 'bluefairy-forms' ),
 						type: 'number',
 						value: formId || '',
 						min: 1,
@@ -57,8 +57,8 @@
 					Placeholder,
 					{
 						icon: 'feedback',
-						label: __( 'BlueFairy Form', 'bluefairy-forms-lite' ),
-						instructions: __( 'Enter a Form ID in the block settings panel on the right to embed a form.', 'bluefairy-forms-lite' ),
+						label: __( 'BlueFairy Form', 'bluefairy-forms' ),
+						instructions: __( 'Enter a Form ID in the block settings panel on the right to embed a form.', 'bluefairy-forms' ),
 					}
 				);
 			}

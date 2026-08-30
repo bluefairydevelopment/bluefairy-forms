@@ -36,12 +36,12 @@ class SubmissionsListTable extends \WP_List_Table
     public function get_columns(): array
     {
         return [
-            'id'           => __('ID', 'bluefairy-forms-lite'),
-            'form_title'   => __('Form', 'bluefairy-forms-lite'),
-            'submitted_at' => __('Submitted At', 'bluefairy-forms-lite'),
-            'email'        => __('Email', 'bluefairy-forms-lite'),
-            'status'       => __('Status', 'bluefairy-forms-lite'),
-            'view'         => __('View', 'bluefairy-forms-lite'),
+            'id'           => __('ID', 'bluefairy-forms'),
+            'form_title'   => __('Form', 'bluefairy-forms'),
+            'submitted_at' => __('Submitted At', 'bluefairy-forms'),
+            'email'        => __('Email', 'bluefairy-forms'),
+            'status'       => __('Status', 'bluefairy-forms'),
+            'view'         => __('View', 'bluefairy-forms'),
         ];
     }
 
@@ -88,7 +88,7 @@ class SubmissionsListTable extends \WP_List_Table
     public function column_email(mixed $item): string
     {
         $email = (string) ($item['email'] ?? '');
-        return $email !== '' ? esc_html($email) : '<em>' . esc_html__('(no email)', 'bluefairy-forms-lite') . '</em>';
+        return $email !== '' ? esc_html($email) : '<em>' . esc_html__('(no email)', 'bluefairy-forms') . '</em>';
     }
 
     /**
@@ -107,6 +107,6 @@ class SubmissionsListTable extends \WP_List_Table
     public function column_view(mixed $item): string
     {
         $url = admin_url('tools.php?page=bffrm-submissions&submission_id=' . (int) $item['id']);
-        return '<a href="' . esc_url($url) . '">' . esc_html__('View', 'bluefairy-forms-lite') . '</a>';
+        return '<a href="' . esc_url($url) . '">' . esc_html__('View', 'bluefairy-forms') . '</a>';
     }
 }

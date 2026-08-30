@@ -81,6 +81,14 @@ final class Plugin
     {
         $handler = new SubmissionHandler($this->settings);
         // Both logged-in and guest users submit.
+        // Cron callback for audit-log retention. Bound outside is_admin() because
+        // WP-Cron requests are not admin requests — binding it in boot_admin()
+        // would mean the scheduled event fired with no listener and the table
+        // kept growing while the schedule looked healthy.
+        add_action('bffrm_prune_audit_log', static function (): void {
+            ( new AuditLogger() )->prune();
+        });
+
         add_action('admin_post_bffrm_submit', [$handler, 'handle']);
         add_action('admin_post_nopriv_bffrm_submit', [$handler, 'handle']);
     }
@@ -118,7 +126,7 @@ final class Plugin
         if (! defined('WP_CLI') || ! WP_CLI) {
             return;
         }
-        \WP_CLI::add_command('bluefairy-forms-lite', Cli\CliCommands::class);
+        \WP_CLI::add_command('bluefairy-forms', Cli\CliCommands::class);
     }
 
     private function boot_admin(): void
