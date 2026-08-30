@@ -32,10 +32,18 @@ class AdminMenu
      */
     public function add_upgrade_link(array $links): array
     {
+        // Nothing to sell someone who already has it. Without this guard the
+        // row still read "Upgrade to Pro" on a site running Pro.
+        if (defined('BFFRMP_VERSION')) {
+            return $links;
+        }
+
+        // "Get", not "Upgrade": Pro is an add-on that runs alongside this
+        // plugin, and "upgrade" reads as a replacement.
         array_unshift($links, sprintf(
             '<a href="%s" target="_blank" rel="noopener noreferrer" style="font-weight:600;color:#1d4ed8;">%s</a>',
             esc_url('https://wordpress.bluefairydevelopment.com/product/bluefairy-forms-pro/'),
-            esc_html__('Upgrade to Pro', 'bluefairy-forms')
+            esc_html__('Get Forms Pro', 'bluefairy-forms')
         ));
         return $links;
     }

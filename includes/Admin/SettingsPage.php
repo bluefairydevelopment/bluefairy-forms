@@ -95,19 +95,37 @@ class SettingsPage
                 <?php submit_button(__('Save Settings', 'bluefairy-forms')); ?>
             </form>
 
+            <?php
+            // Name only features Pro actually ships. This block used to offer
+            // "multi-step forms, file uploads, conditional logic, payment
+            // integration" — of those four only file uploads exists. The other
+            // three appear nowhere in bluefairy-forms-pro, so the free plugin
+            // was advertising a paid product it could not deliver.
+            //
+            // It also says how to install it, because Pro is an ADD-ON: it
+            // requires this plugin to stay active (Plugin.php bails with a
+            // notice otherwise), and "upgrade" wrongly suggests a replacement.
+            if ( ! defined( 'BFFRMP_VERSION' ) ) :
+            ?>
             <div style="margin-top:2em;padding:1em 1.25em;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;max-width:700px;color:#1e3a5f;font-size:.9em;">
-                <?php
-                printf(
-                    /* translators: %s: upgrade link */
-                    esc_html__( '%s for multi-step forms, file uploads, conditional logic, payment integration, and more &rarr;', 'bluefairy-forms' ),
-                    sprintf(
-                        '<a href="%s" target="_blank" rel="noopener noreferrer" style="font-weight:600;color:#1d4ed8;">%s</a>',
-                        esc_url( 'https://wordpress.bluefairydevelopment.com/product/bluefairy-forms-pro/' ),
-                        esc_html__( 'Upgrade to Forms Pro', 'bluefairy-forms' )
-                    )
-                );
-                ?>
+                <p style="margin:0 0 .5em;">
+                    <?php
+                    printf(
+                        /* translators: %s: link to the Forms Pro product page */
+                        esc_html__( '%s adds CSV export, HTML confirmation emails, webhooks, file uploads, CAPTCHA, form scheduling, submission limits and encryption at rest.', 'bluefairy-forms' ),
+                        sprintf(
+                            '<a href="%s" target="_blank" rel="noopener noreferrer" style="font-weight:600;color:#1d4ed8;">%s</a>',
+                            esc_url( 'https://wordpress.bluefairydevelopment.com/product/bluefairy-forms-pro/' ),
+                            esc_html__( 'BlueFairy Forms Pro', 'bluefairy-forms' )
+                        )
+                    );
+                    ?>
+                </p>
+                <p style="margin:0;">
+                    <?php esc_html_e( 'It installs alongside this plugin rather than replacing it — keep BlueFairy Forms active and your forms, submissions and settings carry straight over.', 'bluefairy-forms' ); ?>
+                </p>
             </div>
+            <?php endif; ?>
 
             <?php if (! function_exists('bfas_plugin')): ?>
             <div class="card" style="max-width:600px;margin-top:2em;padding:1em 2em;">

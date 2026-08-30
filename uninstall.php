@@ -29,6 +29,11 @@ foreach ($bffrm_tables as $bffrm_table) {
 // Remove options.
 delete_option('bffrm_settings');
 delete_option('bffrm_ip_hmac_key');
+// The plugin writes THREE options and this removed two of them, so a
+// "Remove Data on Uninstall" run left bffrm_db_version behind while the
+// docblock above promised it removed all plugin data. Caught 2026-08-30 by
+// T-14-7, the first time that test had ever been allowed to execute.
+delete_option('bffrm_db_version');
 // A TRANSIENT, not an option — AdminMenu sets it with set_transient(), so it
 // lives under _transient_bffrm_antispam_notice_dismissed and the matching
 // _transient_timeout_ row. delete_option() on the bare key matched nothing, so
