@@ -69,6 +69,9 @@ final class ClientIpTest extends TestCase
         $this->assertTrue(ClientIp::in_range('2a06:98c7::1', '2a06:98c0::/29'));
         $this->assertFalse(ClientIp::in_range('2a06:98c8::1', '2a06:98c0::/29'));
         $this->assertFalse(ClientIp::in_range('::ffff:104.16.0.1', '104.16.0.0/13'), 'never across families');
+        $this->assertFalse(ClientIp::in_range('10.1.2.3', 'a00::/8'), 'an IPv4 address whose first byte matches an IPv6 prefix');
+        $this->assertFalse(ClientIp::in_range('::1', '0.0.0.0/0'), 'all of IPv4 is not all addresses');
+        $this->assertTrue(ClientIp::in_range('10.1.2.3', '0.0.0.0/0'), 'control');
         $this->assertFalse(ClientIp::in_range('104.16.0.1', '104.16.0.0/33'));
     }
 
