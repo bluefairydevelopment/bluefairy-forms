@@ -85,15 +85,12 @@ final class PayloadValue
      */
     private static function text(mixed $value, int $depth): string
     {
-        if (null === $value) {
-            return '';
-        }
-
         if (is_scalar($value)) {
             // As the (string) cast this replaces: true is "1", false is "".
             return (string) $value;
         }
 
+        // null, objects, resources: nothing to show.
         if (! is_array($value) || $depth >= self::MAX_DEPTH) {
             return '';
         }
