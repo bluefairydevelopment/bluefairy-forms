@@ -75,6 +75,17 @@ do_action( 'bluefairy_antispam_render_fields', 'my_form_type' );
 $is_spam = apply_filters( 'bluefairy_antispam_check', false, $_POST, 'my_form_type', $ip, $email );
 ```
 
+## Extension Hooks
+
+```php
+// Add or change fields before a submission is stored:
+add_filter( 'bffrm_submission_payload', fn( array $payload, int $form_id, array $form ) => $payload, 10, 3 );
+
+// The fields the submission screen and the personal-data export show for a stored row
+// (an add-on that stores the payload elsewhere, e.g. encrypted, supplies it here):
+add_filter( 'bffrm_submission_display_payload', fn( array $payload, array $submission ) => $payload, 10, 2 );
+```
+
 ## Database Tables
 
 - `{prefix}bffrm_forms` — form definitions

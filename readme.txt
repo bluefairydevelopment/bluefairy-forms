@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, spam protection, GDPR
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.8
+Stable tag: 1.1.9
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,10 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 
 == Changelog ==
 
+= 1.1.9 =
+* Fix: a value an add-on stores as a list or a record — a BlueFairy Forms Pro file upload — showed as "Array" in the admin notification e-mail, on the submission screen and in the personal-data export, and logged a PHP warning ("Array to string conversion") on every such submission. An upload now shows as its file name, several as a comma-separated list.
+* New: `bffrm_submission_display_payload` filter (the decoded fields and the submission row), used by the submission screen and the personal-data export. BlueFairy Forms Pro 1.1.0 uses it to show encrypted submissions, which before showed no fields at all.
+
 = 1.1.8 =
 * New: an extension point above the submissions table, so BlueFairy Forms Pro can add its "Export CSV" button there. Pro's CSV export previously had nowhere in the admin to be triggered from.
 
@@ -132,6 +136,9 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 * Multisite: per-site tables via wp_initialize_site.
 
 == Upgrade Notice ==
+
+= 1.1.9 =
+If you use BlueFairy Forms Pro: update this plugin with (or before) Forms Pro 1.1.0. File uploads then show by name in e-mails and on the submission screen, and encrypted submissions can be read in WP admin again.
 
 = 1.1.7 =
 If you use "Remove Data on Uninstall", this release makes it complete — the bffrm_db_version option was previously left behind.

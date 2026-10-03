@@ -60,16 +60,11 @@ class GdprHandler
 
         foreach ($submissions as $sub) {
             $payload = [];
-            if (! empty($sub['payload_plaintext'])) {
-                $decoded = json_decode((string) $sub['payload_plaintext'], true);
-                if (is_array($decoded)) {
-                    foreach ($decoded as $key => $val) {
-                        $payload[] = [
-                            'name'  => esc_html(sanitize_text_field($key)),
-                            'value' => esc_html(sanitize_text_field((string) $val)),
-                        ];
-                    }
-                }
+            foreach (PayloadValue::for_display($sub) as $key => $val) {
+                $payload[] = [
+                    'name'  => esc_html(sanitize_text_field((string) $key)),
+                    'value' => esc_html(sanitize_text_field(PayloadValue::format($val))),
+                ];
             }
 
             $export_items[] = [

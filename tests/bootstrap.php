@@ -33,6 +33,11 @@ if (! function_exists('apply_filters')) {
     /** @param mixed ...$args */
     function apply_filters(string $tag, mixed $value, mixed ...$args): mixed
     {
+        // A test hooks a filter by listing callables in
+        // $GLOBALS['bffrm_test_filters'][$tag]; with none, the value passes through.
+        foreach ($GLOBALS['bffrm_test_filters'][$tag] ?? [] as $callback) {
+            $value = $callback($value, ...$args);
+        }
         return $value;
     }
 }
@@ -93,3 +98,4 @@ if (! function_exists('sanitize_text_field')) {
 if (! function_exists('absint')) {
     function absint(mixed $maybeint): int { return abs((int) $maybeint); }
 }
+require_once __DIR__ . '/payload-stubs.php';

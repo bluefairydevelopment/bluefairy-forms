@@ -85,14 +85,7 @@ class SubmissionsListPage
         }
 
         $back_url = admin_url('tools.php?page=bffrm-submissions');
-        $payload  = [];
-
-        if (! empty($submission['payload_plaintext'])) {
-            $decoded = json_decode((string) $submission['payload_plaintext'], true);
-            if (is_array($decoded)) {
-                $payload = $decoded;
-            }
-        }
+        $payload  = \BlueFairy\Forms\PayloadValue::for_display($submission);
 
         ?>
         <div class="wrap">
@@ -128,7 +121,7 @@ class SubmissionsListPage
                     <?php foreach ($payload as $key => $val): ?>
                     <tr>
                         <th><?php echo esc_html(sanitize_text_field($key)); ?></th>
-                        <td><?php echo esc_html(sanitize_text_field((string) $val)); ?></td>
+                        <td><?php echo esc_html(sanitize_text_field(\BlueFairy\Forms\PayloadValue::format($val))); ?></td>
                     </tr>
                     <?php endforeach; ?>
                     <?php if (! empty($submission['consent_text_snapshot'])): ?>

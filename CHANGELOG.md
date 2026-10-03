@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.1.9] — 2026-10-03
+
+### Fixed
+- **"Array" for structured values (WPMAP-147).** The admin notification
+  (`Mailer::notify_admin()`), the submission screen and the personal-data
+  export all printed each payload value with `(string)`. A value an add-on
+  stores through `bffrm_submission_payload` as an array — BlueFairy Forms Pro
+  stores each upload as `{ original_name, disk_name, mime_type, size }` —
+  became the word "Array" and logged "Array to string conversion" on every
+  upload submission. The new `PayloadValue::format()` renders any value as one
+  line: an upload as its original file name (never the random name on disk), a
+  list as its items, any other array as `key: value` pairs, nested no deeper
+  than four levels.
+
+### Added
+- Filter `bffrm_submission_display_payload` (`array $payload`, `array
+  $submission`): the fields the submission screen and the personal-data export
+  show for one stored row, through `PayloadValue::for_display()`. Both read
+  `payload_plaintext` directly before, which BlueFairy Forms Pro empties when it
+  encrypts a submission, so an encrypted submission showed no fields at all
+  (WPMAP-148); Forms Pro 1.1.0 hooks this filter to decrypt it. A filter that
+  returns something other than an array is ignored.
+
+### Changed
+- Plugin header: the blank line after `Version:` is gone (WPMAP-102).
+
+### Tests
+- `PayloadValueTest` and `PayloadDisplayTest` (the three call sites, with PHP
+  warnings turned into failures, and the display filter on the submission
+  screen and the export); each seen red against a deliberate break. The test
+  bootstrap's `apply_filters()` stub now runs callbacks a test registers.
+
 ## [1.1.8] — 2026-08-30
 
 ### Added

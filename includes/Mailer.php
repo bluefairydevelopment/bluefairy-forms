@@ -52,7 +52,9 @@ class Mailer
         $body .= __("--- Submission Details ---\n", 'bluefairy-forms');
 
         foreach ($payload as $key => $value) {
-            $body .= sanitize_text_field($key) . ': ' . sanitize_text_field((string) $value) . "\n";
+            // PayloadValue, not (string): an add-on's structured value (a Forms
+            // Pro upload) printed "Array" with a PHP warning (WPMAP-147).
+            $body .= sanitize_text_field((string) $key) . ': ' . sanitize_text_field(PayloadValue::format($value)) . "\n";
         }
 
         $admin_url = admin_url('tools.php?page=bffrm-submissions&submission_id=' . $submission_id);
