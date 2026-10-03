@@ -40,7 +40,8 @@
 - `bffrm_settings_fields` (action, inside the settings form) and
   `bffrm_settings_input` (filter on the saved array) for add-on settings;
   `bffrm_before_erase_submissions` (action, with the email hash, before the
-  rows are anonymised).
+  rows are anonymised); `bffrm_submission_detail_after` (action, after the
+  fields on the submission screen, with the row and the payload).
 
 ### Changed
 - Plugin header: the blank line after `Version:` is gone (WPMAP-102).

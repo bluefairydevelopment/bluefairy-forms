@@ -86,6 +86,9 @@ add_action( 'bffrm_settings_fields', function ( \BlueFairy\Forms\Settings $setti
 // …and saves with it (read and sanitise your own $_POST fields):
 add_filter( 'bffrm_settings_input', fn( array $input ) => $input );
 
+// Below the fields on a submission's screen (Forms Pro: uploaded files):
+add_action( 'bffrm_submission_detail_after', function ( array $submission, array $payload ) { /* echo … */ }, 10, 2 );
+
 // Erase an add-on's own copy of submissions before personal-data erasure anonymises them:
 add_action( 'bffrm_before_erase_submissions', function ( string $email_hash ) { /* … */ } );
 

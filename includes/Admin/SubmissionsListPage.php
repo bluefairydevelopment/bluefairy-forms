@@ -136,6 +136,16 @@ class SubmissionsListPage
                     <?php endif; ?>
                 </tbody>
             </table>
+            <?php
+            /**
+             * After the submission's fields on its screen. Forms Pro lists
+             * uploaded files here with download links.
+             *
+             * @param array<string, mixed> $submission The submission row.
+             * @param array<mixed>         $payload    The fields shown above.
+             */
+            do_action('bffrm_submission_detail_after', $submission, $payload);
+            ?>
         </div>
         <?php
     }

@@ -141,4 +141,28 @@ final class PayloadDisplayTest extends TestCase
         $this->assertContains('photo.jpg', $values);
         $this->assertNotContains('Array', $values);
     }
+
+    public function test_the_submission_screen_offers_add_ons_a_place_after_the_fields(): void
+    {
+        $GLOBALS['bffrm_test_rows'] = [[
+            'id' => 17, 'form_id' => 3, 'submitted_at' => '2026-10-03 10:00:00', 'email' => 'jane@example.test',
+            'status' => 'received', 'payload_plaintext' => json_encode(self::PAYLOAD),
+        ]];
+        $seen = [];
+        $GLOBALS['bffrm_test_actions']['bffrm_submission_detail_after'][] = static function (array $row, array $payload) use (&$seen): void {
+            $seen = [$row['id'], array_keys($payload)];
+            echo '<div id="addon-after"></div>';
+        };
+
+        ob_start();
+        try {
+            (new \ReflectionMethod(SubmissionsListPage::class, 'render_detail'))->invoke(new SubmissionsListPage(), 17);
+        } finally {
+            $html = (string) ob_get_clean();
+            $GLOBALS['bffrm_test_actions'] = [];
+        }
+
+        $this->assertSame([17, ['name', 'attachment']], $seen);
+        $this->assertGreaterThan(strpos($html, '</table>'), strpos($html, '<div id="addon-after"></div>'), 'after the fields table');
+    }
 }
