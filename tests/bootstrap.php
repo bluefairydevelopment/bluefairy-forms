@@ -25,7 +25,7 @@ if (! function_exists('is_email')) {
 if (! function_exists('is_user_logged_in')) {
     function is_user_logged_in(): bool
     {
-        return false;
+        return ! empty($GLOBALS['bffrm_test_logged_in']);
     }
 }
 
@@ -44,19 +44,29 @@ if (! function_exists('apply_filters')) {
 
 if (! function_exists('do_action')) {
     /** @param mixed ...$args */
-    function do_action(string $tag, mixed ...$args): void {}
+    function do_action(string $tag, mixed ...$args): void
+    {
+        $GLOBALS['bffrm_test_did'][] = [$tag, $args];
+        foreach ($GLOBALS['bffrm_test_actions'][$tag] ?? [] as $callback) {
+            $callback(...$args);
+        }
+    }
 }
 
 if (! function_exists('get_option')) {
     function get_option(string $option, mixed $default = false): mixed
     {
-        return $default;
+        if (isset($GLOBALS['bffrm_test_option_cb'])) {
+            return ($GLOBALS['bffrm_test_option_cb'])($option, $default);
+        }
+        return array_key_exists($option, $GLOBALS['bffrm_test_options'] ?? []) ? $GLOBALS['bffrm_test_options'][$option] : $default;
     }
 }
 
 if (! function_exists('update_option')) {
     function update_option(string $option, mixed $value, bool|string $autoload = true): bool
     {
+        $GLOBALS['bffrm_test_options'][$option] = $value;
         return true;
     }
 }
@@ -99,3 +109,4 @@ if (! function_exists('absint')) {
     function absint(mixed $maybeint): int { return abs((int) $maybeint); }
 }
 require_once __DIR__ . '/payload-stubs.php';
+require_once __DIR__ . '/handler-stubs.php';

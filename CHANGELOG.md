@@ -2,6 +2,14 @@
 
 ## [1.1.9] — 2026-10-03
 
+### Security
+- **Rate limit bypass.** `get_client_ip()` believed the first of
+  CF-Connecting-IP, X-Forwarded-For, X-Real-IP that held an address. `ClientIp`
+  uses REMOTE_ADDR; CF-Connecting-IP only when REMOTE_ADDR is in Cloudflare's
+  published ranges (shipped, filter `bffrm_cloudflare_ranges`); X-Forwarded-For
+  (right-most untrusted hop) or X-Real-IP only from the new Trusted Proxies
+  setting (one IP/CIDR per line, filter `bffrm_trusted_proxies`).
+
 ### Fixed
 - **"Array" for structured values (WPMAP-147).** The admin notification
   (`Mailer::notify_admin()`), the submission screen and the personal-data
@@ -13,6 +21,13 @@
   line: an upload as its original file name (never the random name on disk), a
   list as its items, any other array as `key: value` pairs, nested no deeper
   than four levels.
+- Consent: refused server-side (`bffrm_error=consent`) when the form has
+  `consent_text` and `bffrm_consent` is absent.
+- "Enable Forms" off now refuses submissions (`bffrm_error=closed`); "Debug
+  Logging" removed (it was read by nothing).
+- `Settings::save()` merges over the stored option instead of replacing it, so
+  an inactive add-on's keys survive a save of this page.
+- uninstall.php runs per site on multisite.
 
 ### Added
 - Filter `bffrm_submission_display_payload` (`array $payload`, `array
@@ -22,6 +37,10 @@
   encrypts a submission, so an encrypted submission showed no fields at all
   (WPMAP-148); Forms Pro 1.1.0 hooks this filter to decrypt it. A filter that
   returns something other than an array is ignored.
+- `bffrm_settings_fields` (action, inside the settings form) and
+  `bffrm_settings_input` (filter on the saved array) for add-on settings;
+  `bffrm_before_erase_submissions` (action, with the email hash, before the
+  rows are anonymised).
 
 ### Changed
 - Plugin header: the blank line after `Version:` is gone (WPMAP-102).
@@ -31,6 +50,12 @@
   warnings turned into failures, and the display filter on the submission
   screen and the export); each seen red against a deliberate break. The test
   bootstrap's `apply_filters()` stub now runs callbacks a test registers.
+- `ClientIpTest` (a spoofed CF-Connecting-IP from outside Cloudflare is
+  ignored; Cloudflare IPv4/IPv6; trusted proxies' right-most untrusted hop;
+  CIDR matching), `SubmissionGatesTest` (closed, consent, and the control that
+  a consenting submission goes on), `SettingsSaveTest`, and
+  `EraseAndUninstallTest` (the erase hook runs before the rows lose their hash;
+  multisite uninstall per site).
 
 ## [1.1.8] — 2026-08-30
 

@@ -13,6 +13,8 @@ namespace BlueFairy\Forms;
  *   rate_limit   — IP exceeded rate limit
  *   spam         — honeypot or timetrap triggered
  *   validation   — server-side field validation failed
+ *   consent      — the form asks for consent and the box was not ticked
+ *   closed       — Settings > Enable Forms is off
  *   success      — bffrm_success=1 appended to redirect URL
  */
 class SubmissionHandler
@@ -58,6 +60,13 @@ class SubmissionHandler
             exit;
         }
 
+        // "Enable Forms — Accept new form submissions" was saved and never read
+        // until 1.1.9: unticking it changed nothing.
+        if (! (bool) $this->settings->get('enabled', true)) {
+            wp_safe_redirect(add_query_arg('bffrm_error', 'closed', $safe_referer));
+            exit;
+        }
+
         // ------------------------------------------------------------------ //
         // C7 — Nonce verification via wp_verify_nonce(), NOT check_admin_referer().
         // ------------------------------------------------------------------ //
@@ -71,7 +80,7 @@ class SubmissionHandler
         // ------------------------------------------------------------------ //
         // Gather contextual data.
         // ------------------------------------------------------------------ //
-        $ip    = $this->get_client_ip();
+        $ip    = ClientIp::current($this->settings);
         $email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( (string) $_POST['email'] ) ) : '';
 
         $hmac_key = $this->settings->get_ip_hmac_key();
@@ -128,6 +137,14 @@ class SubmissionHandler
                 'field'       => $validation['error_field'],
             ], $safe_referer);
             wp_safe_redirect($redirect);
+            exit;
+        }
+
+        // Consent. The checkbox is rendered `required`, but the form carries
+        // novalidate and the server only recorded the answer, so a submission
+        // without consent was accepted and stored (until 1.1.9).
+        if (! empty($config['consent_text']) && empty($_POST['bffrm_consent'])) {
+            wp_safe_redirect(add_query_arg('bffrm_error', 'consent', $safe_referer));
             exit;
         }
 
@@ -242,27 +259,4 @@ class SubmissionHandler
         exit;
     }
 
-    /**
-     * Retrieve the real client IP, respecting common reverse-proxy headers.
-     */
-    private function get_client_ip(): string
-    {
-        $candidates = [
-            'HTTP_CF_CONNECTING_IP',  // Cloudflare.
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_REAL_IP',
-            'REMOTE_ADDR',
-        ];
-
-        foreach ($candidates as $key) {
-            if (! empty($_SERVER[$key])) {
-                $ip = trim(explode(',', wp_unslash( (string) $_SERVER[$key] ))[0]); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- IP validated via filter_var() on next line
-                if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                    return $ip;
-                }
-            }
-        }
-
-        return '0.0.0.0';
-    }
 }

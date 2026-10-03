@@ -46,9 +46,20 @@ final class BFFRM_Test_Wpdb
 {
     public string $prefix = 'wp_';
 
-    public function prepare(string $query, mixed ...$args): string { return $query; }
+    public function prepare(string $query, mixed ...$args): string
+    {
+        $args = 1 === count($args) && is_array($args[0]) ? $args[0] : $args;
+        return vsprintf(str_replace(['%s', '%d'], ["'%s'", '%d'], $query), $args);
+    }
 
     public function get_row(string $query, $output = null): ?array { return $GLOBALS['bffrm_test_rows'][0] ?? null; }
 
     public function get_results(string $query, $output = null): array { return $GLOBALS['bffrm_test_rows'] ?? []; }
+
+    /** @var string[] */
+    public array $queries = [];
+
+    public function query(string $query) { $this->queries[] = $query; return 1; }
+
+    public function get_var(string $query) { $this->queries[] = $query; return 0; }
 }

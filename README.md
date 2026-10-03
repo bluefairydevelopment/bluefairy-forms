@@ -81,6 +81,18 @@ $is_spam = apply_filters( 'bluefairy_antispam_check', false, $_POST, 'my_form_ty
 // Add or change fields before a submission is stored:
 add_filter( 'bffrm_submission_payload', fn( array $payload, int $form_id, array $form ) => $payload, 10, 3 );
 
+// Settings an add-on adds to Tools > BlueFairy Forms > Settings (rows inside the form table):
+add_action( 'bffrm_settings_fields', function ( \BlueFairy\Forms\Settings $settings ) { /* echo <tr>…</tr> */ } );
+// …and saves with it (read and sanitise your own $_POST fields):
+add_filter( 'bffrm_settings_input', fn( array $input ) => $input );
+
+// Erase an add-on's own copy of submissions before personal-data erasure anonymises them:
+add_action( 'bffrm_before_erase_submissions', function ( string $email_hash ) { /* … */ } );
+
+// The proxies whose X-Forwarded-For / X-Real-IP is believed (IP or CIDR), and Cloudflare's ranges:
+add_filter( 'bffrm_trusted_proxies', fn( array $proxies ) => $proxies );
+add_filter( 'bffrm_cloudflare_ranges', fn( array $ranges ) => $ranges );
+
 // The fields the submission screen and the personal-data export show for a stored row
 // (an add-on that stores the payload elsewhere, e.g. encrypted, supplies it here):
 add_filter( 'bffrm_submission_display_payload', fn( array $payload, array $submission ) => $payload, 10, 2 );

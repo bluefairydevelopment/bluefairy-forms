@@ -17,7 +17,10 @@ class Settings
         'notification_email'      => '',
         'rate_limit_max'          => 5,
         'min_time_seconds'        => 3,
-        'debug_log'               => false,
+        // IPs / CIDR ranges, one per line, whose X-Forwarded-For / X-Real-IP
+        // is believed (ClientIp). Empty: only Cloudflare's own header, and
+        // only from Cloudflare's ranges.
+        'trusted_proxies'         => '',
         'remove_data_on_uninstall' => false,
         'honeypot_enabled'        => true,
         // Days to keep audit-log rows. 0 disables pruning. The table previously
@@ -56,8 +59,16 @@ class Settings
      */
     public function save(array $data): void
     {
-        update_option('bffrm_settings', $data);
-        $this->data = array_merge(self::DEFAULTS, $data);
+        // Merged over what is stored: the option is shared with add-ons (Forms
+        // Pro keeps its CAPTCHA keys, upload size, retention and encryption
+        // switch here), and replacing it wholesale from this page's fields
+        // wiped them whenever Pro was not active to put them back.
+        $saved  = get_option('bffrm_settings', []);
+        $merged = array_merge(is_array($saved) ? $saved : [], $data);
+        unset($merged['debug_log']);
+
+        update_option('bffrm_settings', $merged);
+        $this->data = array_merge(self::DEFAULTS, $merged);
     }
 
     /**

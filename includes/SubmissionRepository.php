@@ -176,6 +176,17 @@ class SubmissionRepository
     {
         global $wpdb;
 
+        /**
+         * Before the matching rows are anonymised (their email_hash is
+         * cleared here, so this is the last moment they can be found). An
+         * add-on that stores submission data elsewhere erases it now: Forms
+         * Pro's encrypted copy of the payload stayed decryptable on an
+         * "erased" row until 1.1.9.
+         *
+         * @param string $email_hash The hash the rows are matched on.
+         */
+        do_action('bffrm_before_erase_submissions', $email_hash);
+
         $result = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
                 "UPDATE `{$this->table}` SET `email` = NULL, `email_hash` = NULL, `ip_hash` = NULL, `user_agent_hash` = NULL, `payload_plaintext` = NULL, `consent_text_snapshot` = NULL, `status` = 'erased' WHERE `email_hash` = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared

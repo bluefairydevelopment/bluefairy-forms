@@ -14,7 +14,9 @@
 - **F8 Settings page** — Tools > BlueFairy Forms > Settings. Single `bffrm_settings` option (autoloaded).
 - **Shortcode** — `[bluefairy_form id="N"]` with style enqueued inside callback.
 - **WP-CLI** — `wp bluefairy-forms list-forms` and `wp bluefairy-forms doctor`.
-- **Rate limiting** — DB-backed atomic `INSERT … ON DUPLICATE KEY UPDATE`. Default: 5/min/IP/form.
+- **Rate limiting** — DB-backed atomic `INSERT … ON DUPLICATE KEY UPDATE`. Default: 5/min/IP/form. Client IP (`ClientIp`, 1.1.9): REMOTE_ADDR; CF-Connecting-IP only from Cloudflare's published ranges (built in, `bffrm_cloudflare_ranges`); X-Forwarded-For (right-most untrusted hop) / X-Real-IP only from the Trusted Proxies setting (`bffrm_trusted_proxies`). A spoofed header from anywhere else is ignored.
+- **Consent** — a form with `consent_text` refuses a submission without the box ticked (server-side, 1.1.9).
+- **Enable Forms** — off: every submission is refused with a message.
 - **Email notification** — Synchronous `wp_mail()` to notification_email on each new submission.
 - **Multisite** — Tables created per-site via `wp_initialize_site` hook.
 - **Audit log** — `bffrm_audit_log` table for form create/update/delete events.

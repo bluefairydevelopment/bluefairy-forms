@@ -218,6 +218,8 @@ class Renderer
             'nonce_fail'   => __('Security check failed. Please refresh the page and try again.', 'bluefairy-forms'),
             'rate_limit'   => __('Too many submissions. Please wait a minute and try again.', 'bluefairy-forms'),
             'spam'         => __('Your submission was flagged as spam. Please try again.', 'bluefairy-forms'),
+            'consent'      => __('Please tick the consent box to send this form.', 'bluefairy-forms'),
+            'closed'       => __('This form is not accepting submissions at the moment.', 'bluefairy-forms'),
             'validation'   => $field
                 ? sprintf(
                     /* translators: %s: field label */

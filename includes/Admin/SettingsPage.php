@@ -77,10 +77,10 @@ class SettingsPage
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><label for="bffrm_debug_log"><?php esc_html_e('Debug Logging', 'bluefairy-forms'); ?></label></th>
+                        <th scope="row"><label for="bffrm_trusted_proxies"><?php esc_html_e('Trusted Proxies', 'bluefairy-forms'); ?></label></th>
                         <td>
-                            <input type="checkbox" id="bffrm_debug_log" name="bffrm_debug_log" value="1" <?php checked((bool) $s->get('debug_log', false)); ?>>
-                            <label for="bffrm_debug_log"><?php esc_html_e('Write debug events to WP_DEBUG_LOG', 'bluefairy-forms'); ?></label>
+                            <textarea id="bffrm_trusted_proxies" name="bffrm_trusted_proxies" rows="3" class="large-text code"><?php echo esc_textarea((string) $s->get('trusted_proxies', '')); ?></textarea>
+                            <p class="description"><?php esc_html_e('Only if the site sits behind a proxy or load balancer other than Cloudflare: its IP addresses or CIDR ranges, one per line. Requests from them are attributed to the address in X-Forwarded-For or X-Real-IP. Leave empty otherwise: Cloudflare is recognised automatically, and any other forwarded header is ignored, so it cannot be used to dodge the rate limit.', 'bluefairy-forms'); ?></p>
                         </td>
                     </tr>
                     <tr>
@@ -91,6 +91,17 @@ class SettingsPage
                         </td>
                     </tr>
                 </table>
+
+                <?php
+                /**
+                 * Add-on settings, inside this form (Forms Pro: CAPTCHA keys,
+                 * upload size, retention). Their values arrive through the
+                 * bffrm_settings_input filter on save.
+                 *
+                 * @param \BlueFairy\Forms\Settings $s The current settings.
+                 */
+                do_action('bffrm_settings_fields', $s);
+                ?>
 
                 <?php submit_button(__('Save Settings', 'bluefairy-forms')); ?>
             </form>
@@ -161,9 +172,17 @@ class SettingsPage
             'rate_limit_max'           => min( 60, max( 1, absint( wp_unslash( $_POST['bffrm_rate_limit_max'] ?? 5 ) ) ) ),
             'min_time_seconds'         => min( 30, max( 1, absint( wp_unslash( $_POST['bffrm_min_time_seconds'] ?? 3 ) ) ) ),
             'honeypot_enabled'         => ! empty( $_POST['bffrm_honeypot_enabled'] ),
-            'debug_log'                => ! empty( $_POST['bffrm_debug_log'] ),
+            'trusted_proxies'          => implode( "\n", \BlueFairy\Forms\ClientIp::parse_list( sanitize_textarea_field( wp_unslash( (string) ( $_POST['bffrm_trusted_proxies'] ?? '' ) ) ) ) ),
             'remove_data_on_uninstall' => ! empty( $_POST['bffrm_remove_data'] ),
         ];
+
+        /**
+         * Add-on settings saved with this page (see bffrm_settings_fields).
+         * Each add-on reads and sanitises its own fields from $_POST.
+         *
+         * @param array<string, mixed> $input The plugin's own settings, sanitised.
+         */
+        $input = (array) apply_filters( 'bffrm_settings_input', $input );
         // phpcs:enable WordPress.Security.NonceVerification.Missing
 
         $this->settings->save($input);

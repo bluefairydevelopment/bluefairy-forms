@@ -20,15 +20,15 @@ BlueFairy Forms is a lightweight, privacy-first WordPress forms plugin with no u
 * **Shortcode** — `[bluefairy_form id="1"]` works in Classic Editor, widgets, and theme templates.
 * **JSON form builder** — define form fields in a structured JSON config with full CodeMirror editor in wp-admin.
 * **Server-side validation** — required fields, email/URL/tel/number/date types, pattern constraints, minlength/maxlength.
-* **Native browser validation** — no JavaScript validator required; HTML5 attributes are generated automatically.
+* **HTML5 markup** — input types and attributes (required, pattern, minlength, maxlength) are rendered; the form itself is validated on the server, so the same rules apply whatever the browser.
 * **GDPR-safe IP storage** — IP addresses are HMAC-hashed before storage. Supports WP privacy export and erasure by email.
 * **Spam protection** — built-in honeypot + timetrap. Integrates automatically with the free BlueFairy Anti-Spam plugin for Stop Forum Spam lookup and enhanced coverage.
-* **Rate limiting** — atomic DB-backed rate limiter (no transient race conditions). Default: 5 submissions/minute per IP per form.
+* **Rate limiting** — atomic DB-backed rate limiter (no transient race conditions). Default: 5 submissions/minute per IP per form. The IP is the address that connected; behind Cloudflare the visitor's address is recognised automatically, and any other proxy is configured under Trusted Proxies.
 * **Email notifications** — synchronous wp_mail() notification to admin on each new submission.
-* **Admin submissions list** — WP_List_Table with last 200 rows, with a detail view per submission.
+* **Admin submissions list** — 50 per page, filter by form, with a detail view per submission.
 * **Audit log** — every form creation, update, and deletion is logged to a dedicated table.
 * **WP-CLI** — `wp bluefairy-forms list-forms` and `wp bluefairy-forms doctor`.
-* **Multisite ready** — tables created per-site on new site creation.
+* **Multisite ready** — tables created per-site on new site creation; uninstall cleans every site that asked for its data to be removed.
 * **No external dependencies** — pure PHP 8.1+, no Composer dependencies beyond the autoloader.
 
 **Works great alongside:**
@@ -76,6 +76,10 @@ Not in the free plugin. CSV export is available in BlueFairy Forms Pro.
 
 Submissions are limited to 5 per IP per form per minute by default. The limit is DB-backed using an atomic `INSERT … ON DUPLICATE KEY UPDATE` to avoid race conditions. You can adjust the limit in **Tools > BlueFairy Forms > Settings**.
 
+= Which IP address does the rate limit use? =
+
+The address that connected to your server. Forwarding headers are written by whoever sends the request, so they are believed only from a proxy in front of your site: Cloudflare's `CF-Connecting-IP` when the request comes from one of Cloudflare's published IP ranges (built in, no setup), and `X-Forwarded-For` / `X-Real-IP` only from the proxies you list under **Settings > Trusted Proxies** (IP addresses or CIDR ranges; the right-most forwarded address that is not one of your proxies is used). Developers can adjust both lists with the `bffrm_cloudflare_ranges` and `bffrm_trusted_proxies` filters.
+
 == Screenshots ==
 
 1. The BlueFairy Form Gutenberg block with form ID picker in the inspector.
@@ -88,6 +92,13 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 
 = 1.1.9 =
 * Fix: a value an add-on stores as a list or a record — a BlueFairy Forms Pro file upload — showed as "Array" in the admin notification e-mail, on the submission screen and in the personal-data export, and logged a PHP warning ("Array to string conversion") on every such submission. An upload now shows as its file name, several as a comma-separated list.
+* Security: the rate limit believed the first X-Forwarded-For, X-Real-IP or CF-Connecting-IP header it found, so a sender that changed the header on every request was never limited. It now uses the connecting address, Cloudflare's header only from Cloudflare's own ranges, and forwarded headers only from proxies you list under the new **Trusted Proxies** setting.
+* Fix: a form with a consent checkbox accepted submissions without consent (the check was only in the browser, and the form turns browser validation off). The server now refuses them with a message.
+* Fix: **Enable Forms — Accept new form submissions** did nothing when unticked. Submissions are now refused with "This form is not accepting submissions at the moment." The **Debug Logging** setting, which also did nothing, is removed.
+* Fix: saving this plugin's Settings page while BlueFairy Forms Pro was inactive erased Pro's own settings (CAPTCHA keys, upload size, retention, encryption switch) from the shared option. Saving now keeps them.
+* Fix: on multisite, uninstall cleaned only the site the plugin was deleted from. It now removes the data of every site that ticked Remove Data on Uninstall.
+* New: `bffrm_settings_fields` action and `bffrm_settings_input` filter, so an add-on's settings appear on and save with this page (Forms Pro 1.1.0 adds CAPTCHA keys, upload size and retention there); `bffrm_before_erase_submissions` action, so an add-on erases its own copy of a submission when you erase personal data (Forms Pro's encrypted payload).
+* Docs: the readme no longer claims browser-side validation (the server validates) or a 200-row list (50 per page).
 * New: `bffrm_submission_display_payload` filter (the decoded fields and the submission row), used by the submission screen and the personal-data export. BlueFairy Forms Pro 1.1.0 uses it to show encrypted submissions, which before showed no fields at all.
 
 = 1.1.8 =
@@ -138,7 +149,7 @@ Submissions are limited to 5 per IP per form per minute by default. The limit is
 == Upgrade Notice ==
 
 = 1.1.9 =
-If you use BlueFairy Forms Pro: update this plugin with (or before) Forms Pro 1.1.0. File uploads then show by name in e-mails and on the submission screen, and encrypted submissions can be read in WP admin again.
+If your site is behind a proxy or load balancer other than Cloudflare, list it under Settings > Trusted Proxies, or every visitor will share the proxy's rate limit. If you use BlueFairy Forms Pro: update this plugin with (or before) Forms Pro 1.1.0. File uploads then show by name in e-mails and on the submission screen, and encrypted submissions can be read in WP admin again.
 
 = 1.1.7 =
 If you use "Remove Data on Uninstall", this release makes it complete — the bffrm_db_version option was previously left behind.
