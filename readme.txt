@@ -91,6 +91,7 @@ The address that connected to your server. Forwarding headers are written by who
 == Changelog ==
 
 = 1.1.9 =
+* Fix: a form whose configuration has no field list logged two PHP warnings on every view.
 * Fix: with BlueFairy Anti-Spam active, forms kept using their own honeypot and time trap instead of handing spam checking to it, and the settings page and admin notice still recommended installing it. Forms now detects Anti-Spam correctly.
 * Fix: a value an add-on stores as a list or a record — a BlueFairy Forms Pro file upload — showed as "Array" in the admin notification e-mail, on the submission screen and in the personal-data export, and logged a PHP warning ("Array to string conversion") on every such submission. An upload now shows as its file name, several as a comma-separated list.
 * Security: the rate limit believed the first X-Forwarded-For, X-Real-IP or CF-Connecting-IP header it found, so a sender that changed the header on every request was never limited. It now uses the connecting address, Cloudflare's header only from Cloudflare's own ranges, and forwarded headers only from proxies you list under the new **Trusted Proxies** setting.
