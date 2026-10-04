@@ -41,6 +41,15 @@
 - uninstall.php runs per site on multisite.
 
 ### Added
+- **Reply-To on the admin notification (WPMAP-151).** It carried only a
+  Content-Type header, so replying to it wrote to the site, not the visitor.
+  `Reply-To: Name <address>` now comes from the submission's `email` field and
+  its `name` (or `first_name` + `last_name`). `Mailer::reply_to()`: the address
+  must pass `is_email()`, or there is no Reply-To; the name loses control
+  characters (CR/LF: no header injection) and `, ; < > "`, and is capped at
+  100 characters.
+- Filter `bffrm_notification_headers` (`string[] $headers`, `array $form`,
+  `array $submission` = `['id', 'payload']`) for the admin notification.
 - Filter `bffrm_submission_display_payload` (`array $payload`, `array
   $submission`): the fields the submission screen and the personal-data export
   show for one stored row, through `PayloadValue::for_display()`. Both read

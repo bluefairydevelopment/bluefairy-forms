@@ -81,7 +81,7 @@ $is_spam = apply_filters( 'bluefairy_antispam_check', false, $_POST, 'my_form_ty
 // Add or change fields before a submission is stored:
 add_filter( 'bffrm_submission_payload', fn( array $payload, int $form_id, array $form ) => $payload, 10, 3 );
 
-// Settings an add-on adds to Tools > BlueFairy Forms > Settings (rows inside the form table):
+// Settings an add-on adds to Tools > BF Forms — Settings (rows inside the form table):
 add_action( 'bffrm_settings_fields', function ( \BlueFairy\Forms\Settings $settings ) { /* echo <tr>…</tr> */ } );
 // …and saves with it (read and sanitise your own $_POST fields):
 add_filter( 'bffrm_settings_input', fn( array $input ) => $input );
@@ -98,6 +98,9 @@ add_filter( 'bffrm_cloudflare_ranges', fn( array $ranges ) => $ranges );
 
 // The fields the submission screen and the personal-data export show for a stored row
 // (an add-on that stores the payload elsewhere, e.g. encrypted, supplies it here):
+// The admin notification's headers (Reply-To the visitor is already there, 1.1.9):
+add_filter( 'bffrm_notification_headers', fn( array $headers, array $form, array $submission ) => $headers, 10, 3 );
+
 add_filter( 'bffrm_submission_display_payload', fn( array $payload, array $submission ) => $payload, 10, 2 );
 ```
 

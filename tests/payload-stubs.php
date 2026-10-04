@@ -34,7 +34,7 @@ if (! function_exists('sanitize_email')) {
 if (! function_exists('wp_mail')) {
     /** Records each call in $GLOBALS['bffrm_test_mail']. */
     function wp_mail($to, $subject, $message, $headers = '', $attachments = []) {
-        $GLOBALS['bffrm_test_mail'][] = ['to' => $to, 'subject' => $subject, 'body' => $message];
+        $GLOBALS['bffrm_test_mail'][] = ['to' => $to, 'subject' => $subject, 'body' => $message, 'headers' => $headers];
         return true;
     }
 }

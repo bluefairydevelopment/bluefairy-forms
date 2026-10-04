@@ -66,6 +66,57 @@ class Mailer
 
         $headers = ['Content-Type: text/plain; charset=UTF-8'];
 
+        // Reply goes to the visitor (WPMAP-151). Until 1.1.9 only the
+        // Content-Type was sent, so replying to a notification wrote to the
+        // site itself.
+        $reply_to = self::reply_to($payload);
+        if ('' !== $reply_to) {
+            $headers[] = $reply_to;
+        }
+
+        /**
+         * Filter the admin notification's headers.
+         *
+         * @param string[]             $headers    "Name: value" lines.
+         * @param array<string, mixed> $form       The form row.
+         * @param array<string, mixed> $submission ['id' => int, 'payload' => array].
+         */
+        $headers = (array) apply_filters('bffrm_notification_headers', $headers, $form, ['id' => $submission_id, 'payload' => $payload]);
+
         wp_mail($to, $subject, $body, $headers);
+    }
+
+    /**
+     * "Reply-To: Name <address>" from the submission's email field (id
+     * "email", as the privacy tools use) and its name (id "name", else
+     * "first_name" and "last_name"); "" when there is no valid address.
+     *
+     * Header-safe: the address must pass is_email(), whose allowed
+     * characters exclude CR, LF, spaces, commas, quotes and < >. The name
+     * loses control characters (CR, LF, tab: no header injection) and the
+     * characters wp_mail() splits or parses on (, ; < > "), and is capped at
+     * 100 characters. PHPMailer encodes a non-ASCII name.
+     *
+     * @param array<string, mixed> $payload
+     */
+    public static function reply_to(array $payload): string
+    {
+        $email = is_scalar($payload['email'] ?? null) ? trim((string) $payload['email']) : '';
+        if ('' === $email || ! is_email($email)) {
+            return '';
+        }
+
+        $name = is_scalar($payload['name'] ?? null) ? (string) $payload['name'] : '';
+        if ('' === trim($name)) {
+            $first = is_scalar($payload['first_name'] ?? null) ? (string) $payload['first_name'] : '';
+            $last  = is_scalar($payload['last_name'] ?? null) ? (string) $payload['last_name'] : '';
+            $name  = $first . ' ' . $last;
+        }
+        $name = (string) preg_replace('/[\x00-\x1F\x7F,;<>"]+/u', ' ', $name);
+        $name = trim((string) preg_replace('/\s+/u', ' ', $name));
+        $name = function_exists('mb_substr') ? mb_substr($name, 0, 100) : substr($name, 0, 100);
+        $name = trim($name);
+
+        return '' !== $name ? 'Reply-To: ' . $name . ' <' . $email . '>' : 'Reply-To: ' . $email;
     }
 }

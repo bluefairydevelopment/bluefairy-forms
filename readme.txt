@@ -24,7 +24,7 @@ BlueFairy Forms is a lightweight, privacy-first WordPress forms plugin with no u
 * **GDPR-safe IP storage** — IP addresses are HMAC-hashed before storage. Supports WP privacy export and erasure by email.
 * **Spam protection** — built-in honeypot + timetrap. Integrates automatically with the free BlueFairy Anti-Spam plugin for Stop Forum Spam lookup and enhanced coverage.
 * **Rate limiting** — atomic DB-backed rate limiter (no transient race conditions). Default: 5 submissions/minute per IP per form. The IP is the address that connected; behind Cloudflare the visitor's address is recognised automatically, and any other proxy is configured under Trusted Proxies.
-* **Email notifications** — synchronous wp_mail() notification to admin on each new submission.
+* **Email notifications** — synchronous wp_mail() notification to admin on each new submission, with Reply-To set to the visitor so you can answer straight from your inbox.
 * **Admin submissions list** — 50 per page, filter by form, with a detail view per submission.
 * **Audit log** — every form creation, update, and deletion is logged to a dedicated table.
 * **WP-CLI** — `wp bluefairy-forms list-forms` and `wp bluefairy-forms doctor`.
@@ -91,6 +91,7 @@ The address that connected to your server. Forwarding headers are written by who
 == Changelog ==
 
 = 1.1.9 =
+* New: the admin notification e-mail has Reply-To set to the visitor (their name and address from the form), so replying reaches them. There was no Reply-To, so a reply went to your own site. Filter `bffrm_notification_headers` changes the headers.
 * Fix: a form whose configuration has no field list logged two PHP warnings on every view.
 * Fix: with BlueFairy Anti-Spam active, forms kept using their own honeypot and time trap instead of handing spam checking to it, and the settings page and admin notice still recommended installing it. Forms now detects Anti-Spam correctly.
 * Fix: a value an add-on stores as a list or a record — a BlueFairy Forms Pro file upload — showed as "Array" in the admin notification e-mail, on the submission screen and in the personal-data export, and logged a PHP warning ("Array to string conversion") on every such submission. An upload now shows as its file name, several as a comma-separated list.
