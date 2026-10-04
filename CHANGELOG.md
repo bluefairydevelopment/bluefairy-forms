@@ -11,6 +11,9 @@
   setting (one IP/CIDR per line, filter `bffrm_trusted_proxies`).
 
 ### Fixed
+- **A form whose config has no `fields` list** rendered with two PHP warnings
+  per page view ("Undefined array key", "foreach() argument must be of type
+  array"). `Renderer::fields()` reads it as a list of field definitions or none.
 - **Forms never handed spam checking to BlueFairy Anti-Spam.** It detected
   Anti-Spam with `function_exists('bfas_plugin')`, a function Anti-Spam has
   never defined, so with Anti-Spam active the form still carried Forms' own

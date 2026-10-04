@@ -24,6 +24,26 @@ class Renderer
     }
 
     /**
+     * The config's field definitions: a list of arrays, or none. A config with
+     * no "fields" key (or not a list) rendered with two PHP warnings per page
+     * view, "Undefined array key" and "foreach() argument must be of type
+     * array" (seen on the rig, 2026-10-03). Validator and SubmissionHandler
+     * already default it to an empty list.
+     *
+     * @param array<mixed> $config
+     * @return array<int, array<string, mixed>>
+     */
+    public static function fields(array $config): array
+    {
+        $fields = $config['fields'] ?? [];
+        if (! is_array($fields)) {
+            return [];
+        }
+
+        return array_values(array_filter($fields, 'is_array'));
+    }
+
+    /**
      * Render a form by its ID, returning the complete HTML string.
      */
     public static function render_form(int $form_id): string
@@ -54,7 +74,7 @@ class Renderer
 
         // Use multipart/form-data when any field is of type 'file'.
         $has_file_field = false;
-        foreach ( $config['fields'] as $fdef ) {
+        foreach ( self::fields( $config ) as $fdef ) {
             if ( isset( $fdef['type'] ) && $fdef['type'] === 'file' ) {
                 $has_file_field = true;
                 break;
@@ -95,7 +115,7 @@ class Renderer
                 <?php wp_nonce_field('bffrm_submit_' . $form_id, 'bffrm_nonce'); ?>
                 <input type="hidden" name="_wp_http_referer" value="<?php echo esc_url( $referer_url ); ?>">
 
-                <?php foreach ($config['fields'] as $field_def): ?>
+                <?php foreach (self::fields($config) as $field_def): ?>
                     <?php self::render_field($field_def); ?>
                 <?php endforeach; ?>
 
