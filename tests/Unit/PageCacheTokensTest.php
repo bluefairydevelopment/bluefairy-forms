@@ -94,13 +94,15 @@ final class PageCacheTokensTest extends TestCase
     public function test_refusals_read_back_for_the_admin_screen_with_a_label(): void
     {
         $GLOBALS['bffrm_test_rows'] = [
-            ['created_at' => '2026-10-04 01:00:00.000000', 'metadata' => '{"form_id":2,"reason":"timetrap_expired"}'],
-            ['created_at' => '2026-10-04 00:59:00.000000', 'metadata' => '{"form_id":2,"reason":"validation","field":"email"}'],
+            ['ts' => '1791075600', 'metadata' => '{"form_id":2,"reason":"timetrap_expired"}'],
+            ['ts' => '1791075540', 'metadata' => '{"form_id":2,"reason":"validation","field":"email"}'],
         ];
         $rows = RejectionLog::recent(50, 2);
 
         $this->assertSame([2, 'timetrap_expired', ''], [$rows[0]['form_id'], $rows[0]['reason'], $rows[0]['field']]);
         $this->assertSame('email', $rows[1]['field']);
+        $this->assertSame(gmdate('Y-m-d H:i:s', 1791075600), $rows[0]['at'], 'UTC from the epoch, whatever the database\'s time zone');
+        $this->assertStringContainsString('UNIX_TIMESTAMP(`created_at`)', (string) end($GLOBALS['wpdb']->queries));
         $this->assertStringContainsString("`action` = 'submission.rejected'", (string) end($GLOBALS['wpdb']->queries));
         $this->assertStringContainsString('`subject_id` = 2', (string) end($GLOBALS['wpdb']->queries));
         $this->assertStringContainsString('send again', RejectionLog::label('timetrap_expired'));

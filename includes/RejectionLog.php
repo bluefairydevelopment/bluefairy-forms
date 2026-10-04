@@ -23,14 +23,16 @@ final class RejectionLog
         $table = esc_sql($wpdb->prefix . 'bffrm_audit_log');
         $where = $form_id > 0 ? $wpdb->prepare(' AND `subject_id` = %d', $form_id) : '';
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $rows = (array) $wpdb->get_results($wpdb->prepare("SELECT `created_at`, `metadata` FROM `{$table}` WHERE `action` = 'submission.rejected'{$where} ORDER BY `id` DESC LIMIT %d", max(1, $limit)), ARRAY_A);
+        $rows = (array) $wpdb->get_results($wpdb->prepare("SELECT UNIX_TIMESTAMP(`created_at`) AS `ts`, `metadata` FROM `{$table}` WHERE `action` = 'submission.rejected'{$where} ORDER BY `id` DESC LIMIT %d", max(1, $limit)), ARRAY_A);
 
         $out = [];
         foreach ($rows as $row) {
             $meta  = json_decode((string) ($row['metadata'] ?? ''), true);
             $meta  = is_array($meta) ? $meta : [];
             $out[] = [
-                'at'      => (string) ($row['created_at'] ?? ''),
+                // The column is filled by the database in ITS time zone; the
+                // epoch makes the screen's "UTC" true whatever that zone is.
+                'at'      => gmdate('Y-m-d H:i:s', (int) ($row['ts'] ?? 0)),
                 'form_id' => (int) ($meta['form_id'] ?? 0),
                 'reason'  => (string) ($meta['reason'] ?? ''),
                 'field'   => (string) ($meta['field'] ?? ''),
