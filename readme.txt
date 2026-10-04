@@ -4,7 +4,7 @@ Tags: forms, contact form, form builder, spam protection, GDPR
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.1.9
+Stable tag: 1.1.10
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,10 @@ The address that connected to your server. Forwarding headers are written by who
 
 == Changelog ==
 
+= 1.1.10 =
+* Fix: with BlueFairy Forms Pro 1.0.6 or earlier active, the Trusted Proxies setting (new in 1.1.9) was not saved: that version of Pro kept the old stored value. It saves now, whichever Forms Pro is active.
+* Fix: the audit log (and the refused-submissions list) was pruned a few hours early or late on a database whose time zone is not UTC. The 90-day cutoff now uses the database's own clock.
+
 = 1.1.9 =
 * Fix: on a site with a page cache (W3 Total Cache, WP Super Cache, LiteSpeed, a CDN), a cached form page stopped working after a day and every enquiry sent from it was thrown away as spam, with no trace. Pages with a form are no longer cached, the form fetches fresh security tokens when it loads, a form left open too long asks the visitor to send again, and every refused submission is listed (form and reason only) under Refused submissions on the Submissions screen.
 * New: the admin notification e-mail has Reply-To set to the visitor (their name and address from the form), so replying reaches them. There was no Reply-To, so a reply went to your own site. Filter `bffrm_notification_headers` changes the headers.
@@ -151,6 +155,9 @@ The address that connected to your server. Forwarding headers are written by who
 * Multisite: per-site tables via wp_initialize_site.
 
 == Upgrade Notice ==
+
+= 1.1.10 =
+The Trusted Proxies setting now saves when BlueFairy Forms Pro 1.0.6 or earlier is active. Needed only if your site sits behind a proxy or load balancer other than Cloudflare.
 
 = 1.1.9 =
 If your site is behind a proxy or load balancer other than Cloudflare, list it under Settings > Trusted Proxies, or every visitor will share the proxy's rate limit. If you use BlueFairy Forms Pro: update this plugin with (or before) Forms Pro 1.1.0. File uploads then show by name in e-mails and on the submission screen, and encrypted submissions can be read in WP admin again.

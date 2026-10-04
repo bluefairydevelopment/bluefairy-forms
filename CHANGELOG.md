@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1.10] — 2026-10-04
+
+### Fixed
+- **Settings saved beside Forms Pro 1.0.6 and earlier (WPMAP-153).** That Pro's
+  sanitiser for the shared `bffrm_settings` option starts from the stored
+  value and copies back a fixed list of 1.1.8 keys, so a newer key (Trusted
+  Proxies) was dropped on every save while it was active.
+  `Settings::keep_own_keys()` runs last on `sanitize_option_bffrm_settings`
+  and puts this plugin's own keys back from the value being saved, each
+  sanitised (`Settings::sanitize_own()`).
+- **Audit-log pruning cutoff** compared `UTC_TIMESTAMP()` with rows stamped by
+  the database's `CURRENT_TIMESTAMP` (its own time zone): hours out on a
+  database not set to UTC. The cutoff uses `NOW()` (WPMAP-154).
+
+### Tests
+- `SettingsLateSanitiserTest` (each guard seen red). E2E, in the Forms Pro
+  suite: Trusted Proxies saves with Forms Pro 1.0.6 active and with 1.1.0.
+
 ## [1.1.9] — 2026-10-03
 
 ### Fixed: enquiries lost to a page cache (WPMAP-152)
@@ -42,16 +60,6 @@
 - **A form whose config has no `fields` list** rendered with two PHP warnings
   per page view ("Undefined array key", "foreach() argument must be of type
   array"). `Renderer::fields()` reads it as a list of field definitions or none.
-- **Settings saved beside Forms Pro 1.0.6 and earlier.** That Pro's
-  sanitiser for the shared `bffrm_settings` option starts from the stored
-  value and copies back a fixed list of 1.1.8 keys, so a newer key (Trusted
-  Proxies) was dropped on every save while it was active.
-  `Settings::keep_own_keys()` runs last on `sanitize_option_bffrm_settings`
-  and puts this plugin's own keys back from the value being saved, each
-  sanitised (`Settings::sanitize_own()`).
-- **Audit-log pruning cutoff** compared `UTC_TIMESTAMP()` with rows stamped by
-  the database's `CURRENT_TIMESTAMP` (its own time zone): hours out on a
-  database not set to UTC. The cutoff uses `NOW()`.
 - **Forms never handed spam checking to BlueFairy Anti-Spam.** It detected
   Anti-Spam with `function_exists('bfas_plugin')`, a function Anti-Spam has
   never defined, so with Anti-Spam active the form still carried Forms' own
