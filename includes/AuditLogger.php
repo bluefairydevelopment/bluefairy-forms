@@ -77,7 +77,11 @@ class AuditLogger
 
         return (int) $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
             $wpdb->prepare(
-                "DELETE FROM `{$this->table}` WHERE `created_at` < DATE_SUB(UTC_TIMESTAMP(), INTERVAL %d DAY) LIMIT 1000",
+                // NOW(), not UTC_TIMESTAMP(): created_at is filled by the
+                // database's CURRENT_TIMESTAMP, in its session time zone, so
+                // the cutoff must be in that zone too (it was hours out on
+                // a database not set to UTC).
+                "DELETE FROM `{$this->table}` WHERE `created_at` < DATE_SUB(NOW(), INTERVAL %d DAY) LIMIT 1000",
                 $days
             )
         );

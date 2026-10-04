@@ -40,6 +40,7 @@ final class Plugin
 
         // WPMAP-152: pages with a form are not page-cached, and a form served
         // from a cache anyway fetches fresh tokens on load.
+        Settings::register(); // Own keys survive an older Forms Pro's sanitiser.
         PageCache::register();
         ( new TokenEndpoint($this->settings) )->register();
         $this->register_gdpr_hooks();
