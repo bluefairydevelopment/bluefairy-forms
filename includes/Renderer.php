@@ -66,6 +66,13 @@ class Renderer
             return $pre_html;
         }
 
+        // WPMAP-152: never page-cache a response carrying a form's tokens,
+        // and refresh them on load where a cache serves the page anyway.
+        PageCache::bypass();
+        if (! \wp_doing_ajax() && ! (defined('REST_REQUEST') && REST_REQUEST)) {
+            wp_enqueue_script('bffrm-form-tokens', BFFRM_URL . 'assets/js/form-tokens.js', [], BFFRM_VERSION, ['in_footer' => true, 'strategy' => 'defer']);
+        }
+
         $settings    = new Settings();
         $spam        = new SpamChecker($settings);
         $form_type   = 'bffrm_' . $form_id;
@@ -108,6 +115,7 @@ class Renderer
                 class="bffrm-form"
                 novalidate
                 data-bffrm-id="<?php echo esc_attr((string) $form_id); ?>"
+                data-bffrm-tokens="<?php echo esc_url(TokenEndpoint::url($form_id)); ?>"
                 <?php if ( $has_file_field ) : ?>enctype="multipart/form-data"<?php endif; ?>
             >
                 <input type="hidden" name="action" value="bffrm_submit">
@@ -235,7 +243,8 @@ class Renderer
     private static function error_message(string $error, string $field = ''): string
     {
         return match ($error) {
-            'nonce_fail'   => __('Security check failed. Please refresh the page and try again.', 'bluefairy-forms'),
+            'nonce_fail'   => __('This form had expired, so your message was not sent. The form is ready again: please send it once more.', 'bluefairy-forms'),
+            'expired'      => __('This page was open for too long, so your message was not sent. The form is ready again: please send it once more.', 'bluefairy-forms'),
             'rate_limit'   => __('Too many submissions. Please wait a minute and try again.', 'bluefairy-forms'),
             'spam'         => __('Your submission was flagged as spam. Please try again.', 'bluefairy-forms'),
             'consent'      => __('Please tick the consent box to send this form.', 'bluefairy-forms'),

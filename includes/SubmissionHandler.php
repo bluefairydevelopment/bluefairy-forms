@@ -11,11 +11,19 @@ namespace BlueFairy\Forms;
  * Error codes:
  *   nonce_fail   — nonce verification failed or form not found
  *   rate_limit   — IP exceeded rate limit
- *   spam         — honeypot or timetrap triggered
+ *   spam         — honeypot, time trap (missing, altered, too fast) or Anti-Spam
+ *   expired      — the time token is more than a day old: the page was open
+ *                  that long, or a page cache served it (WPMAP-152). Not spam;
+ *                  the visitor is asked to send again.
  *   validation   — server-side field validation failed
  *   consent      — the form asks for consent and the box was not ticked
  *   closed       — Settings > Enable Forms is off
  *   success      — bffrm_success=1 appended to redirect URL
+ *
+ * Every refusal is recorded (WPMAP-152): audit-log action
+ * "submission.rejected" with the form id and a reason code, no field values
+ * and no address. Until 1.1.9 nothing was, so a site could not see that a
+ * cached form page was losing every enquiry.
  */
 class SubmissionHandler
 {
@@ -24,6 +32,28 @@ class SubmissionHandler
     public function __construct(Settings $settings)
     {
         $this->settings = $settings;
+    }
+
+    /**
+     * Refuse the submission: record why, then send the visitor back with the
+     * error code. Records the form id and the reason only (no field values,
+     * no address, no IP) as audit-log action "submission.rejected"; the
+     * Submissions screen lists them and the audit-log retention prunes them.
+     *
+     * @param array<string, string> $extra More non-personal context (a field id).
+     */
+    protected function reject(string $code, string $reason, int $form_id, string $url, array $extra = []): never
+    {
+        ( new AuditLogger() )->log(
+            'submission.rejected',
+            array_merge(['form_id' => $form_id, 'reason' => $reason], $extra),
+            null,
+            'form',
+            $form_id > 0 ? $form_id : null
+        );
+
+        wp_safe_redirect(add_query_arg('bffrm_error', $code, $url));
+        exit;
     }
 
     /**
@@ -47,8 +77,7 @@ class SubmissionHandler
         $form_id = isset($_POST['bffrm_form_id']) ? (int) $_POST['bffrm_form_id'] : 0;
 
         if ($form_id < 1) {
-            wp_safe_redirect(add_query_arg('bffrm_error', 'nonce_fail', $safe_referer));
-            exit;
+            $this->reject('nonce_fail', 'form_missing', 0, $safe_referer);
         }
 
         $repo = new FormRepository();
@@ -56,15 +85,13 @@ class SubmissionHandler
 
         if (null === $form) {
             // C7/M1: form not found — same redirect as nonce fail, no timing difference.
-            wp_safe_redirect(add_query_arg('bffrm_error', 'nonce_fail', $safe_referer));
-            exit;
+            $this->reject('nonce_fail', 'form_missing', $form_id, $safe_referer);
         }
 
         // "Enable Forms — Accept new form submissions" was saved and never read
         // until 1.1.9: unticking it changed nothing.
         if (! (bool) $this->settings->get('enabled', true)) {
-            wp_safe_redirect(add_query_arg('bffrm_error', 'closed', $safe_referer));
-            exit;
+            $this->reject('closed', 'closed', $form_id, $safe_referer);
         }
 
         // ------------------------------------------------------------------ //
@@ -73,8 +100,7 @@ class SubmissionHandler
         $nonce = isset($_POST['bffrm_nonce']) ? wp_unslash( (string) $_POST['bffrm_nonce'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce value, passed directly to wp_verify_nonce()
 
         if (! wp_verify_nonce($nonce, 'bffrm_submit_' . $form_id)) {
-            wp_safe_redirect(add_query_arg('bffrm_error', 'nonce_fail', $safe_referer));
-            exit;
+            $this->reject('nonce_fail', '' === $nonce ? 'nonce_missing' : 'nonce', $form_id, $safe_referer);
         }
 
         // ------------------------------------------------------------------ //
@@ -104,8 +130,7 @@ class SubmissionHandler
         $rate_limiter = new RateLimiter($max_hits);
 
         if ($rate_limiter->is_limited($ip_hash, $form_id)) {
-            wp_safe_redirect(add_query_arg('bffrm_error', 'rate_limit', $safe_referer));
-            exit;
+            $this->reject('rate_limit', 'rate_limit', $form_id, $safe_referer);
         }
 
         // ------------------------------------------------------------------ //
@@ -114,9 +139,15 @@ class SubmissionHandler
         $spam_checker = new SpamChecker($this->settings);
         $form_type    = 'bffrm_' . $form_id;
 
-        if ($spam_checker->is_spam($_POST, $form_type, $ip, $email)) {
-            wp_safe_redirect(add_query_arg('bffrm_error', 'spam', $safe_referer));
-            exit;
+        $spam_reason  = $spam_checker->reason($_POST, $form_type, $ip, $email);
+        if ('timetrap_expired' === $spam_reason) {
+            // Not spam: the page was loaded more than a day ago (a page cache
+            // serves the token it cached). The visitor is told to send again;
+            // the reloaded form is fresh (Renderer marks it uncacheable).
+            $this->reject('expired', $spam_reason, $form_id, $safe_referer);
+        }
+        if ('' !== $spam_reason) {
+            $this->reject('spam', $spam_reason, $form_id, $safe_referer);
         }
 
         // ------------------------------------------------------------------ //
@@ -124,35 +155,28 @@ class SubmissionHandler
         // ------------------------------------------------------------------ //
         $config = json_decode((string) $form['config_json'], true);
         if (! is_array($config)) {
-            wp_safe_redirect(add_query_arg('bffrm_error', 'nonce_fail', $safe_referer));
-            exit;
+            $this->reject('nonce_fail', 'config', $form_id, $safe_referer);
         }
 
         $validator = new Validator();
         $validation = $validator->validate($_POST, $config);
 
         if (! $validation['valid']) {
-            $redirect = add_query_arg([
-                'bffrm_error' => 'validation',
-                'field'       => $validation['error_field'],
-            ], $safe_referer);
-            wp_safe_redirect($redirect);
-            exit;
+            $this->reject('validation', 'validation', $form_id, add_query_arg('field', $validation['error_field'], $safe_referer), ['field' => sanitize_key((string) $validation['error_field'])]);
         }
 
         // Consent. The checkbox is rendered `required`, but the form carries
         // novalidate and the server only recorded the answer, so a submission
         // without consent was accepted and stored (until 1.1.9).
         if (! empty($config['consent_text']) && empty($_POST['bffrm_consent'])) {
-            wp_safe_redirect(add_query_arg('bffrm_error', 'consent', $safe_referer));
-            exit;
+            $this->reject('consent', 'consent', $form_id, $safe_referer);
         }
 
         // Allow Pro to block submission before storage (e.g., form closed, submission limit reached).
         $block_error = apply_filters( 'bffrm_pre_submit', '', $form_id, $form, $_POST );
         if ( '' !== $block_error ) {
-            wp_safe_redirect( add_query_arg( 'bffrm_error', sanitize_key( (string) $block_error ), $safe_referer ) );
-            exit;
+            $code = sanitize_key( (string) $block_error );
+            $this->reject( $code, 'addon:' . $code, $form_id, $safe_referer );
         }
 
         // ------------------------------------------------------------------ //

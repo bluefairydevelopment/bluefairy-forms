@@ -38,3 +38,11 @@ function checked($checked, $current = true, $display = true) { $out = (string) $
 function esc_textarea($text) { return htmlspecialchars((string) $text, ENT_QUOTES); }
 function submit_button($text = null, $type = 'primary', $name = 'submit', $wrap = true, $other = null) { echo '<button>' . $text . '</button>'; }
 function check_admin_referer($action = -1, $query_arg = '_wpnonce') { return 1; }
+
+if (! function_exists('get_current_user_id')) {
+    function get_current_user_id() { return ! empty($GLOBALS['bffrm_test_logged_in']) ? 1 : 0; }
+}
+
+if (! function_exists('wp_json_encode')) {
+    function wp_json_encode($data, $options = 0, $depth = 512) { return json_encode($data, $options, $depth); }
+}

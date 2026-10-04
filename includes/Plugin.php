@@ -37,6 +37,11 @@ final class Plugin
         $this->register_shortcode();
         $this->register_submission_handler();
         $this->register_ajax_nonce();
+
+        // WPMAP-152: pages with a form are not page-cached, and a form served
+        // from a cache anyway fetches fresh tokens on load.
+        PageCache::register();
+        ( new TokenEndpoint($this->settings) )->register();
         $this->register_gdpr_hooks();
         $this->register_multisite_hook();
         $this->register_cli();

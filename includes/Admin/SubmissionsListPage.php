@@ -70,7 +70,51 @@ class SubmissionsListPage
             ?>
 
             <?php $table->display(); ?>
+
+            <?php $this->render_rejections($form_id); ?>
         </div>
+        <?php
+    }
+
+    /**
+     * Refused submissions (WPMAP-152): until 1.1.9 a refusal left no trace,
+     * so a page cache serving day-old tokens lost every enquiry unseen.
+     */
+    private function render_rejections(int $form_id): void
+    {
+        $rows = \BlueFairy\Forms\RejectionLog::recent(50, $form_id);
+        $days = (int) ( new \BlueFairy\Forms\Settings() )->get('audit_retention_days', 90);
+        ?>
+        <h2 id="bffrm-rejected"><?php esc_html_e('Refused submissions', 'bluefairy-forms'); ?></h2>
+        <p class="description">
+            <?php
+            printf(
+                /* translators: %d: days the audit log keeps rows */
+                esc_html__('The most recent 50, newest first: the form and the reason only (nothing the visitor typed). Kept for %d days.', 'bluefairy-forms'),
+                (int) $days
+            );
+            ?>
+        </p>
+        <?php if ([] === $rows) : ?>
+            <p class="bffrm-rejected-none"><?php esc_html_e('None.', 'bluefairy-forms'); ?></p>
+        <?php else : ?>
+            <table class="widefat striped bffrm-rejected">
+                <thead><tr>
+                    <th><?php esc_html_e('When (UTC)', 'bluefairy-forms'); ?></th>
+                    <th><?php esc_html_e('Form', 'bluefairy-forms'); ?></th>
+                    <th><?php esc_html_e('Reason', 'bluefairy-forms'); ?></th>
+                </tr></thead>
+                <tbody>
+                <?php foreach ($rows as $row) : ?>
+                    <tr data-reason="<?php echo esc_attr($row['reason']); ?>">
+                        <td><?php echo esc_html(substr($row['at'], 0, 19)); ?></td>
+                        <td><?php echo esc_html((string) $row['form_id']); ?></td>
+                        <td><?php echo esc_html(\BlueFairy\Forms\RejectionLog::label($row['reason']) . ('' !== $row['field'] ? ' (' . $row['field'] . ')' : '')); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
         <?php
     }
 

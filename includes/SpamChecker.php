@@ -87,6 +87,26 @@ class SpamChecker
      */
     public function is_spam(array $post_data, string $form_type, string $ip, string $email): bool
     {
+        return '' !== $this->reason($post_data, $form_type, $ip, $email);
+    }
+
+    /**
+     * Why a submission is refused, or '' when it is not:
+     *   antispam           BlueFairy Anti-Spam said spam
+     *   honeypot           the hidden field was filled
+     *   timetrap_missing   no time token
+     *   timetrap_tampered  the token does not decode or its signature fails
+     *   timetrap_fast      sent sooner than Minimum Submission Time
+     *   timetrap_expired   the page was loaded more than a day ago. Not
+     *                      spam (WPMAP-152): a page cache serves the form
+     *                      with the token it was cached with, and refusing
+     *                      it as spam lost genuine enquiries silently.
+     *                      SubmissionHandler asks the visitor to send again.
+     *
+     * @param array<string, mixed> $post_data
+     */
+    public function reason(array $post_data, string $form_type, string $ip, string $email): string
+    {
         if (self::delegates()) {
             return (bool) apply_filters(
                 'bluefairy_antispam_check',
@@ -95,17 +115,36 @@ class SpamChecker
                 $form_type,
                 $ip,
                 $email
-            );
+            ) ? 'antispam' : '';
         }
 
         // Self-contained fallback.
         if ((bool) $this->settings->get('honeypot_enabled', true)) {
             if ($this->check_honeypot($post_data, $form_type)) {
-                return true;
+                return 'honeypot';
             }
         }
 
-        return $this->check_timetrap($post_data, $form_type);
+        return $this->timetrap_reason($post_data, $form_type);
+    }
+
+    /**
+     * A fresh time token for $form_type: [field name => value], or [] when
+     * Anti-Spam renders the fields or no key exists yet. The form's script
+     * fetches this (TokenEndpoint) so a page served from a cache gets a
+     * token from now, not from when the page was cached.
+     *
+     * @return array<string, string>
+     */
+    public function fresh_fields(string $form_type): array
+    {
+        if (self::delegates()) {
+            return [];
+        }
+
+        $token = $this->timetrap_token($form_type);
+
+        return null === $token ? [] : ['bffrm_tk_' . $form_type => $token];
     }
 
     // ------------------------------------------------------------------ //
@@ -146,48 +185,60 @@ class SpamChecker
 
     private function render_timetrap(string $form_type): void
     {
-        $key  = $this->settings->get_ip_hmac_key();
-        if ($key === '') {
+        $token = $this->timetrap_token($form_type);
+        if (null === $token) {
             return;
         }
-
-        $nonce     = wp_create_nonce('bffrm_tt_' . $form_type);
-        $timestamp = time();
-        $hmac      = hash_hmac('sha256', $nonce . ':' . $timestamp . ':' . $form_type, $key);
-        $token     = base64_encode($nonce . '|' . $timestamp . '|' . $hmac);
 
         echo '<input type="hidden" name="bffrm_tk_' . esc_attr($form_type) . '" value="' . esc_attr($token) . '">';
     }
 
     /**
+     * The signed time token: base64(nonce|timestamp|hmac), or null without a key.
+     */
+    public function timetrap_token(string $form_type, ?int $timestamp = null): ?string
+    {
+        $key = $this->settings->get_ip_hmac_key();
+        if ($key === '') {
+            return null;
+        }
+
+        $nonce     = wp_create_nonce('bffrm_tt_' . $form_type);
+        $timestamp = $timestamp ?? time();
+        $hmac      = hash_hmac('sha256', $nonce . ':' . $timestamp . ':' . $form_type, $key);
+
+        return base64_encode($nonce . '|' . $timestamp . '|' . $hmac);
+    }
+
+    /**
      * @param array<string, mixed> $post_data
      */
-    private function check_timetrap(array $post_data, string $form_type): bool
+    private function timetrap_reason(array $post_data, string $form_type): string
     {
         if (is_user_logged_in()) {
-            return false;
+            return '';
         }
 
         $key = $this->settings->get_ip_hmac_key();
         if ($key === '') {
-            return false; // Key not yet generated — skip.
+            return ''; // Key not yet generated — skip.
         }
 
         $field = 'bffrm_tk_' . $form_type;
         $token = isset($post_data[$field]) ? (string) $post_data[$field] : '';
 
         if ($token === '') {
-            return true; // Missing token = spam.
+            return 'timetrap_missing';
         }
 
         $decoded = base64_decode($token, true);
         if ($decoded === false) {
-            return true;
+            return 'timetrap_tampered';
         }
 
         $parts = explode('|', $decoded, 3);
         if (count($parts) !== 3) {
-            return true;
+            return 'timetrap_tampered';
         }
 
         [$nonce, $timestamp_str, $hmac] = $parts;
@@ -195,20 +246,20 @@ class SpamChecker
 
         $expected = hash_hmac('sha256', $nonce . ':' . $timestamp . ':' . $form_type, $key);
         if (! hash_equals($expected, $hmac)) {
-            return true; // Tampered.
+            return 'timetrap_tampered';
         }
 
         $elapsed = time() - $timestamp;
         $min     = (int) $this->settings->get('min_time_seconds', 3);
 
         if ($elapsed < $min) {
-            return true; // Too fast.
+            return 'timetrap_fast';
         }
 
-        if ($elapsed > 86400) {
-            return true; // Expired.
+        if ($elapsed > 86400) { // One day.
+            return 'timetrap_expired';
         }
 
-        return false;
+        return '';
     }
 }

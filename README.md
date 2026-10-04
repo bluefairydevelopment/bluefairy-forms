@@ -75,6 +75,10 @@ do_action( 'bluefairy_antispam_render_fields', 'my_form_type' );
 $is_spam = apply_filters( 'bluefairy_antispam_check', false, $_POST, 'my_form_type', $ip, $email );
 ```
 
+## Page caches (1.1.9)
+
+A page that shows a form is sent uncacheable (`DONOTCACHEPAGE` and `nocache_headers()`), and the form fetches a fresh nonce and time token on load from `GET /wp-json/bffrm/v1/tokens/{form_id}` (never cached; 30 requests a minute per address). A time token more than a day old asks the visitor to send again (`bffrm_error=expired`); it is not treated as spam. Every refused submission is recorded with its reason (no field values) and listed under **Refused submissions** on the Submissions screen.
+
 ## Extension Hooks
 
 ```php

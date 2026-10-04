@@ -91,6 +91,7 @@ The address that connected to your server. Forwarding headers are written by who
 == Changelog ==
 
 = 1.1.9 =
+* Fix: on a site with a page cache (W3 Total Cache, WP Super Cache, LiteSpeed, a CDN), a cached form page stopped working after a day and every enquiry sent from it was thrown away as spam, with no trace. Pages with a form are no longer cached, the form fetches fresh security tokens when it loads, a form left open too long asks the visitor to send again, and every refused submission is listed (form and reason only) under Refused submissions on the Submissions screen.
 * New: the admin notification e-mail has Reply-To set to the visitor (their name and address from the form), so replying reaches them. There was no Reply-To, so a reply went to your own site. Filter `bffrm_notification_headers` changes the headers.
 * Fix: a form whose configuration has no field list logged two PHP warnings on every view.
 * Fix: with BlueFairy Anti-Spam active, forms kept using their own honeypot and time trap instead of handing spam checking to it, and the settings page and admin notice still recommended installing it. Forms now detects Anti-Spam correctly.

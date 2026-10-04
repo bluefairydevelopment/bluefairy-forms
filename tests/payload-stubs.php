@@ -54,7 +54,7 @@ final class BFFRM_Test_Wpdb
 
     public function get_row(string $query, $output = null): ?array { return $GLOBALS['bffrm_test_rows'][0] ?? null; }
 
-    public function get_results(string $query, $output = null): array { return $GLOBALS['bffrm_test_rows'] ?? []; }
+    public function get_results(string $query, $output = null): array { $this->queries[] = $query; return $GLOBALS['bffrm_test_rows'] ?? []; }
 
     /** @var string[] */
     public array $queries = [];
@@ -62,4 +62,9 @@ final class BFFRM_Test_Wpdb
     public function query(string $query) { $this->queries[] = $query; return 1; }
 
     public function get_var(string $query) { $this->queries[] = $query; return 0; }
+
+    /** @var array<int, array{0: string, 1: array<string, mixed>}> */
+    public array $inserts = [];
+
+    public function insert(string $table, array $data, $format = null) { $this->inserts[] = [$table, $data]; return 1; }
 }

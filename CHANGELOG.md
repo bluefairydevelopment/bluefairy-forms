@@ -2,6 +2,34 @@
 
 ## [1.1.9] — 2026-10-03
 
+### Fixed: enquiries lost to a page cache (WPMAP-152)
+- **A cached form page lost every enquiry after a day, silently.** A page
+  cache (W3 Total Cache measured on wordpress.bluefairydevelopment.com; WP
+  Super Cache, LiteSpeed and CDNs do the same) served the form with the nonce
+  and time token it was cached with. After 12-24 h the nonce was refused;
+  after 24 h `SpamChecker::check_timetrap()` called the token expired and the
+  submission was refused AS SPAM. Nothing recorded either. Now:
+  - a page showing a form is not cacheable: `PageCache` defines
+    `DONOTCACHEPAGE` and sends `nocache_headers()` on `template_redirect` for
+    a post with the shortcode or block, and again whenever a form renders;
+  - the form's script (`assets/js/form-tokens.js`, no inline JS) fetches a
+    fresh nonce and time token on load from `GET /wp-json/bffrm/v1/tokens/{id}`
+    (`TokenEndpoint`: never cached, 30 a minute per address), so a cache that
+    ignores the constant still serves a form that works; logged-in pages are
+    left alone;
+  - a time token over a day old is not spam: the visitor sees "This page was
+    open for too long, so your message was not sent. The form is ready again:
+    please send it once more." (`bffrm_error=expired`), and a refused nonce now
+    says the same instead of "Security check failed";
+  - every refused submission is recorded (audit-log action
+    `submission.rejected`: form id and reason code, no field values, no
+    address; kept for the audit retention, 90 days) and listed under
+    **Refused submissions** on Tools → BF Forms — Submissions. Reasons:
+    `timetrap_expired`, `nonce`, `nonce_missing`, `timetrap_fast`,
+    `timetrap_missing`, `timetrap_tampered`, `honeypot`, `antispam`,
+    `rate_limit`, `validation` (with the field id), `consent`, `closed`,
+    `form_missing`, `config`, `addon:{code}`.
+
 ### Security
 - **Rate limit bypass.** `get_client_ip()` believed the first of
   CF-Connecting-IP, X-Forwarded-For, X-Real-IP that held an address. `ClientIp`
