@@ -103,6 +103,10 @@ final class PayloadValue
 
         $parts = [];
 
+        // Keys 0..n-1 in order. Not array_is_list(): Plugin Check counts it as
+        // WordPress 6.5's (core polyfills it there) and this plugin supports 6.4.
+        $is_list = array_keys($value) === range(0, count($value) - 1);
+
         foreach ($value as $key => $item) {
             $text = self::text($item, $depth + 1);
 
@@ -112,7 +116,7 @@ final class PayloadValue
 
             // A list (several files, a multi-select) reads as its items; any
             // other array keeps its keys so nothing reads out of context.
-            $parts[] = array_is_list($value) ? $text : $key . ': ' . $text;
+            $parts[] = $is_list ? $text : $key . ': ' . $text;
         }
 
         return implode(', ', $parts);
