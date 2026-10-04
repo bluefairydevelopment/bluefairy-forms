@@ -93,7 +93,7 @@ class AdminMenu
         }
 
         // Anti-Spam is active?
-        if (function_exists('bfas_plugin')) {
+        if (\BlueFairy\Forms\SpamChecker::antispam_active()) {
             return;
         }
 

@@ -109,7 +109,7 @@ class CliCommands
         }
 
         // Check Anti-Spam integration.
-        if (function_exists('bfas_plugin')) {
+        if (\BlueFairy\Forms\SpamChecker::antispam_active()) {
             \WP_CLI::success('BlueFairy Anti-Spam is active — enhanced spam protection enabled.');
         } else {
             \WP_CLI::warning('BlueFairy Anti-Spam not active — using built-in fallback spam protection.');

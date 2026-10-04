@@ -11,6 +11,14 @@
   setting (one IP/CIDR per line, filter `bffrm_trusted_proxies`).
 
 ### Fixed
+- **Forms never handed spam checking to BlueFairy Anti-Spam.** It detected
+  Anti-Spam with `function_exists('bfas_plugin')`, a function Anti-Spam has
+  never defined, so with Anti-Spam active the form still carried Forms' own
+  honeypot and time trap, and the settings page, admin notice and
+  `wp bluefairy-forms doctor` said Anti-Spam was not active.
+  `SpamChecker::antispam_active()` reads `BFAS_VERSION`; delegation also needs
+  both hooks registered (`SpamChecker::delegates()`), so a form is never left
+  with no protection.
 - **"Array" for structured values (WPMAP-147).** The admin notification
   (`Mailer::notify_admin()`), the submission screen and the personal-data
   export all printed each payload value with `(string)`. A value an add-on

@@ -10,7 +10,12 @@ namespace BlueFairy\Forms;
  * public action/filter hooks. Otherwise it falls back to self-contained
  * honeypot + timetrap logic that mirrors what Anti-Spam does.
  *
- * Detection: function_exists('bfas_plugin') — avoids autoloader coupling.
+ * Detection: antispam_active() / delegates(). Until 1.1.9 it was
+ * function_exists('bfas_plugin'), a function BlueFairy Anti-Spam has never
+ * defined (1.1.4 defines BFAS_VERSION and registers the two hooks), so Forms
+ * never delegated: with Anti-Spam active, Forms still rendered and checked
+ * its own honeypot and time trap, and the settings page and admin notice
+ * kept recommending a plugin that was already installed.
  */
 class SpamChecker
 {
@@ -34,13 +39,32 @@ class SpamChecker
     }
 
     /**
+     * Is BlueFairy Anti-Spam active? (It defines BFAS_VERSION when it loads.)
+     */
+    public static function antispam_active(): bool
+    {
+        return defined('BFAS_VERSION');
+    }
+
+    /**
+     * Hand spam checking to Anti-Spam: only when it is active AND has
+     * registered both hooks, so a form is never left with no protection.
+     */
+    public static function delegates(): bool
+    {
+        return self::antispam_active()
+            && false !== has_action('bluefairy_antispam_render_fields')
+            && false !== has_filter('bluefairy_antispam_check');
+    }
+
+    /**
      * Render spam-protection fields into the form output.
      *
      * @param string $form_type  bffrm_{form_id}
      */
     public function render_fields(string $form_type): void
     {
-        if (function_exists('bfas_plugin')) {
+        if (self::delegates()) {
             do_action('bluefairy_antispam_render_fields', $form_type);
             return;
         }
@@ -63,7 +87,7 @@ class SpamChecker
      */
     public function is_spam(array $post_data, string $form_type, string $ip, string $email): bool
     {
-        if (function_exists('bfas_plugin')) {
+        if (self::delegates()) {
             return (bool) apply_filters(
                 'bluefairy_antispam_check',
                 false,

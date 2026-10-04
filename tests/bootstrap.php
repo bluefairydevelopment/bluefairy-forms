@@ -53,6 +53,22 @@ if (! function_exists('do_action')) {
     }
 }
 
+if (! function_exists('has_action')) {
+    /** Hooked in $GLOBALS['bffrm_test_actions'][$tag]: 10 (core's default priority), else false. */
+    function has_action(string $tag, mixed $callback = false): bool|int
+    {
+        return [] !== ($GLOBALS['bffrm_test_actions'][$tag] ?? []) ? 10 : false;
+    }
+}
+
+if (! function_exists('has_filter')) {
+    /** Hooked in $GLOBALS['bffrm_test_filters'][$tag]: 10, else false. */
+    function has_filter(string $tag, mixed $callback = false): bool|int
+    {
+        return [] !== ($GLOBALS['bffrm_test_filters'][$tag] ?? []) ? 10 : false;
+    }
+}
+
 if (! function_exists('get_option')) {
     function get_option(string $option, mixed $default = false): mixed
     {

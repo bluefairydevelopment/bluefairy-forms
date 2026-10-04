@@ -138,7 +138,7 @@ class SettingsPage
             </div>
             <?php endif; ?>
 
-            <?php if (! function_exists('bfas_plugin')): ?>
+            <?php if (! \BlueFairy\Forms\SpamChecker::antispam_active()): ?>
             <div class="card" style="max-width:600px;margin-top:2em;padding:1em 2em;">
                 <h2><?php esc_html_e('Upgrade Spam Protection', 'bluefairy-forms'); ?></h2>
                 <p>
