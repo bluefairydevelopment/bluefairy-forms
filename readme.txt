@@ -1,5 +1,6 @@
 === BlueFairy Forms ===
 Contributors: bluefairydevelopment
+Donate link: https://ko-fi.com/bluefairydevelopment
 Tags: forms, contact form, form builder, spam protection, GDPR
 Requires at least: 6.4
 Tested up to: 7.1
