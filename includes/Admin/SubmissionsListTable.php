@@ -46,7 +46,7 @@ class SubmissionsListTable extends \WP_List_Table
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, array{0: string, 1: bool}>
      */
     protected function get_sortable_columns(): array
     {

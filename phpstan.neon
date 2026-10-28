@@ -1,0 +1,45 @@
+includes:
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+  phpVersion: 80100
+  level: 6
+  # Filter values and stored options can be any type at runtime; keep the
+  # code's guards for them rather than trusting the docblock types.
+  treatPhpDocTypesAsCertain: false
+  # Every PHP file the release zip ships (vendor/ and tests/ are not analysed).
+  paths:
+    - bluefairy-forms.php
+    - uninstall.php
+    - includes/
+    - build/blocks/form/render.php
+  # BFFRM_* constants are defined in the main plugin file.
+  scanFiles:
+    - bluefairy-forms.php
+    - phpstan/plugin-constants.php
+  bootstrapFiles:
+    - vendor/szepeviktor/phpstan-wordpress/bootstrap.php
+    - vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
+  ignoreErrors:
+    # doctor() reports each failed check with WP_CLI::error($msg, false), which
+    # prints and carries on: $exit = false means "do not exit". The WordPress
+    # extension lists WP_CLI::error in earlyTerminatingMethodCalls, so PHPStan
+    # treats every call as the end of the method whatever $exit says. That
+    # makes the `$all_ok = false;` after each one look unreachable and the
+    # final `if ($all_ok)` look always true. Both are live code.
+    -
+      identifier: deadCode.unreachable
+      path: includes/Cli/CliCommands.php
+      count: 3
+    -
+      identifier: if.alwaysTrue
+      path: includes/Cli/CliCommands.php
+      count: 1
+    # The bffrm_submission_payload filter runs just above this line. The
+    # WordPress extension types apply_filters() as returning its input's type
+    # (here a non-empty array), but a third-party callback can return an empty
+    # array, so the `! empty($payload)` guard is real and stays.
+    -
+      identifier: ternary.alwaysTrue
+      path: includes/SubmissionHandler.php
+      count: 1

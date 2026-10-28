@@ -162,7 +162,7 @@ class Installer
         }
 
         $key = bin2hex(random_bytes(32));
-        add_option('bffrm_ip_hmac_key', $key, '', 'no'); // non-autoloaded
+        add_option('bffrm_ip_hmac_key', $key, '', false); // non-autoloaded
     }
 
     /**

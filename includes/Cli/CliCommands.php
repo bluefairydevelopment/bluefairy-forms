@@ -29,6 +29,9 @@ class CliCommands
      *     wp bluefairy-forms list-forms --format=json
      *
      * @subcommand list-forms
+     *
+     * @param array<int, string>    $args       Positional arguments.
+     * @param array<string, string> $assoc_args Associative arguments.
      */
     public function list_forms(array $args, array $assoc_args): void
     {
@@ -61,6 +64,9 @@ class CliCommands
      *     wp bluefairy-forms doctor
      *
      * @subcommand doctor
+     *
+     * @param array<int, string>    $args       Positional arguments.
+     * @param array<string, string> $assoc_args Associative arguments.
      */
     public function doctor(array $args, array $assoc_args): void
     {

@@ -93,9 +93,6 @@ class FormsListPage
         $this->render_form_editor(null, null, null);
     }
 
-    /**
-     * @param array<string, mixed>|null $form
-     */
     private function render_edit_form(int $form_id, FormRepository $repo): void
     {
         $form = $repo->find($form_id);
